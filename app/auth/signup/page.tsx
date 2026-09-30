@@ -30,8 +30,8 @@ export default function SignupPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold font-display tracking-tight">
-            <span className="text-brand-primary-700">Abhart</span>
-            <span className="text-brand-accent-500">brands</span>
+            <span className="text-brand-primary-700">The</span>
+            <span className="text-brand-accent-500">GrowSetu</span>
           </h1>
           <p className="mt-2 text-ink-500 text-sm">Factory Rates. Without the Factory MOQ.</p>
         </div>
@@ -39,7 +39,7 @@ export default function SignupPage() {
         <div className="bg-white rounded-2xl shadow-lg border border-ink-200 p-8 space-y-6">
           <div className="text-center">
             <h2 className="text-2xl font-bold text-ink-900 font-display">Create Account</h2>
-            <p className="mt-1 text-ink-500 text-sm">Join thousands of buyers on Abhartbrands</p>
+            <p className="mt-1 text-ink-500 text-sm">Join thousands of buyers on TheGrowSetu</p>
           </div>
 
           {/* Google Signup Button */}

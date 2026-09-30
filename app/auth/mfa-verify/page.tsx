@@ -162,7 +162,7 @@ export default function MFAVerifyPage() {
         </div>
 
         <p className="text-xs text-ink-400 text-center mt-4">
-          Lost access? Contact support@abhartbrands.com
+          Lost access? Contact support@thegrowsetu.com
         </p>
       </Card>
     </div>

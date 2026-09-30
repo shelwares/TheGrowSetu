@@ -2,7 +2,7 @@ import { getPools } from '@/lib/actions/pool'
 import PoolCard from '@/components/PoolCard'
 
 export const metadata = {
-  title: 'Active Pools | Abhartbrands',
+  title: 'Active Pools | TheGrowSetu',
   description: 'Browse all active manufacturing pools and join to get factory direct pricing.',
 }
 

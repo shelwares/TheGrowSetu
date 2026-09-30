@@ -1,6 +1,6 @@
 export const metadata = {
-  title: 'Terms & Conditions | Abhartbrands',
-  description: 'Terms and conditions for using Abhartbrands platform',
+  title: 'Terms & Conditions | TheGrowSetu',
+  description: 'Terms and conditions for using TheGrowSetu platform',
 };
 
 export default function TermsPage() {
@@ -12,12 +12,12 @@ export default function TermsPage() {
       <div className="prose prose-ink max-w-none space-y-6 text-ink-700">
         <section>
           <h2 className="text-2xl font-bold text-ink-900 mt-8 mb-3">1. Acceptance of Terms</h2>
-          <p>By accessing and using Abhartbrands ("the Platform"), you accept and agree to be bound by these Terms & Conditions. If you do not agree, please do not use the Platform.</p>
+          <p>By accessing and using TheGrowSetu ("the Platform"), you accept and agree to be bound by these Terms &amp; Conditions. If you do not agree, please do not use the Platform.</p>
         </section>
 
         <section>
-          <h2 className="text-2xl font-bold text-ink-900 mt-8 mb-3">2. About Abhartbrands</h2>
-          <p>Abhartbrands is a B2B demand aggregation platform that pools orders from multiple buyers to unlock factory-direct pricing. We act as an aggregator and brand, sourcing products from verified manufacturers and delivering to buyers.</p>
+          <h2 className="text-2xl font-bold text-ink-900 mt-8 mb-3">2. About TheGrowSetu</h2>
+          <p>TheGrowSetu is a B2B demand aggregation platform that pools orders from multiple buyers to unlock factory-direct pricing. We act as an aggregator and brand, sourcing products from verified manufacturers and delivering to buyers.</p>
         </section>
 
         <section>
@@ -74,12 +74,12 @@ export default function TermsPage() {
 
         <section>
           <h2 className="text-2xl font-bold text-ink-900 mt-8 mb-3">8. Limitation of Liability</h2>
-          <p>Abhartbrands shall not be liable for any indirect, incidental, or consequential damages arising from the use of the Platform. Our total liability shall not exceed the amount paid by the user for the specific order in question.</p>
+          <p>TheGrowSetu shall not be liable for any indirect, incidental, or consequential damages arising from the use of the Platform. Our total liability shall not exceed the amount paid by the user for the specific order in question.</p>
         </section>
 
         <section>
           <h2 className="text-2xl font-bold text-ink-900 mt-8 mb-3">9. Intellectual Property</h2>
-          <p>All content on the Platform — including logos, text, and design — is owned by Abhartbrands and protected by applicable laws. You may not reproduce or redistribute any content without permission.</p>
+          <p>All content on the Platform — including logos, text, and design — is owned by TheGrowSetu and protected by applicable laws. You may not reproduce or redistribute any content without permission.</p>
         </section>
 
         <section>
@@ -94,7 +94,7 @@ export default function TermsPage() {
 
         <section>
           <h2 className="text-2xl font-bold text-ink-900 mt-8 mb-3">12. Contact</h2>
-          <p>For questions about these terms, contact us at <a href="mailto:support@abhartbrands.com" className="text-brand-primary-600 underline">support@abhartbrands.com</a>.</p>
+          <p>For questions about these terms, contact us at <a href="mailto:support@thegrowsetu.com" className="text-brand-primary-600 underline">support@thegrowsetu.com</a>.</p>
         </section>
       </div>
     </div>

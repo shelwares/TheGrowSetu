@@ -1,4 +1,10 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# TheGrowSetu — B2B Demand Aggregation Platform
+
+**TheGrowSetu** is India's B2B demand aggregation platform. Small business owners — retailers, D2C founders, Instagram sellers — join collective buying pools to unlock factory-direct pricing without needing to meet high Minimum Order Quantities (MOQ).
+
+**"The bridge to your business growth."**
+
+---
 
 ## Getting Started
 
@@ -10,27 +16,28 @@ npm run dev
 yarn dev
 # or
 pnpm dev
-# or
-bun dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Tech Stack
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **Framework:** Next.js 15 (App Router)
+- **Database & Auth:** Supabase (PostgreSQL + Row-Level Security)
+- **Styling:** Tailwind CSS
+- **Email:** Brevo (transactional)
+- **Hosting:** Vercel
 
-## Learn More
+## Key Features
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- Dynamic pricing pools (price drops as more buyers join)
+- B2B user onboarding with Google OAuth + email/password
+- Admin panel for pool management, order tracking, QC status
+- MFA (TOTP) for admin security
+- DPDP Act compliant privacy & refund policies
 
 ## Deploy on Vercel
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+The easiest way to deploy is via the [Vercel Platform](https://vercel.com/new).
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Check out the [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.

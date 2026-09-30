@@ -1,6 +1,6 @@
 export const metadata = {
-  title: 'Contact Us | Abhartbrands',
-  description: 'Get in touch with Abhartbrands team',
+  title: 'Contact Us | TheGrowSetu',
+  description: 'Get in touch with TheGrowSetu team',
 };
 
 export default function ContactPage() {
@@ -16,29 +16,29 @@ export default function ContactPage() {
           <div className="space-y-5">
             <div>
               <p className="text-sm font-semibold text-ink-500 uppercase mb-1">Customer Support</p>
-              <a href="mailto:support@abhartbrands.com" className="text-brand-primary-600 hover:underline">
-                support@abhartbrands.com
+              <a href="mailto:support@thegrowsetu.com" className="text-brand-primary-600 hover:underline">
+                support@thegrowsetu.com
               </a>
             </div>
 
             <div>
               <p className="text-sm font-semibold text-ink-500 uppercase mb-1">Refunds & Complaints</p>
-              <a href="mailto:refunds@abhartbrands.com" className="text-brand-primary-600 hover:underline">
-                refunds@abhartbrands.com
+              <a href="mailto:refunds@thegrowsetu.com" className="text-brand-primary-600 hover:underline">
+                refunds@thegrowsetu.com
               </a>
             </div>
 
             <div>
               <p className="text-sm font-semibold text-ink-500 uppercase mb-1">Business Enquiries</p>
-              <a href="mailto:business@abhartbrands.com" className="text-brand-primary-600 hover:underline">
-                business@abhartbrands.com
+              <a href="mailto:business@thegrowsetu.com" className="text-brand-primary-600 hover:underline">
+                business@thegrowsetu.com
               </a>
             </div>
 
             <div>
               <p className="text-sm font-semibold text-ink-500 uppercase mb-1">Grievance Officer (DPDP)</p>
-              <a href="mailto:dpo@abhartbrands.com" className="text-brand-primary-600 hover:underline">
-                dpo@abhartbrands.com
+              <a href="mailto:dpo@thegrowsetu.com" className="text-brand-primary-600 hover:underline">
+                dpo@thegrowsetu.com
               </a>
               <p className="text-xs text-ink-500 mt-1">Response within 30 days</p>
             </div>
@@ -92,7 +92,7 @@ export default function ContactPage() {
             </div>
 
             <a
-              href="mailto:support@abhartbrands.com"
+              href="mailto:support@thegrowsetu.com"
               className="block w-full text-center bg-brand-primary-600 hover:bg-brand-primary-700 text-white font-semibold py-2.5 rounded-lg transition"
             >
               Send Message
@@ -108,7 +108,7 @@ export default function ContactPage() {
       <div className="mt-12 bg-brand-primary-50 rounded-2xl p-6 border border-brand-primary-100">
         <h2 className="text-lg font-bold text-ink-900 mb-2">Registered Office</h2>
         <p className="text-ink-700 text-sm">
-          Abhartbrands<br />
+          TheGrowSetu<br />
           [Your Business Address]<br />
           Maharashtra, India
         </p>

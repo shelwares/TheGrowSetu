@@ -56,7 +56,7 @@ export default async function Home() {
       <section id="how-it-works" className="py-24 bg-white px-4">
         <FadeIn className="max-w-7xl mx-auto">
           <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-ink-900 mb-4 font-display tracking-tight">How Abhartbrands Works</h2>
+            <h2 className="text-3xl font-bold text-ink-900 mb-4 font-display tracking-tight">How TheGrowSetu Works</h2>
             <p className="text-ink-600 max-w-2xl mx-auto text-lg">We combine the buying power of hundreds of small businesses to negotiate better rates directly with top manufacturers.</p>
           </div>
           

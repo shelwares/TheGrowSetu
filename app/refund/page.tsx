@@ -1,6 +1,6 @@
 export const metadata = {
-  title: 'Refund Policy | Abhartbrands',
-  description: 'Refund and cancellation policy for Abhartbrands orders',
+  title: 'Refund Policy | TheGrowSetu',
+  description: 'Refund and cancellation policy for TheGrowSetu orders',
 };
 
 export default function RefundPage() {
@@ -12,7 +12,7 @@ export default function RefundPage() {
       <div className="prose prose-ink max-w-none space-y-6 text-ink-700">
         <section>
           <h2 className="text-2xl font-bold text-ink-900 mt-8 mb-3">1. Overview</h2>
-          <p>At Abhartbrands, we want you to be satisfied with your purchase. This policy outlines when and how refunds are processed.</p>
+          <p>At TheGrowSetu, we want you to be satisfied with your purchase. This policy outlines when and how refunds are processed.</p>
         </section>
 
         <section>
@@ -61,7 +61,7 @@ export default function RefundPage() {
         <section>
           <h2 className="text-2xl font-bold text-ink-900 mt-8 mb-3">6. How to Request a Refund</h2>
           <ol className="list-decimal pl-6 space-y-2">
-            <li>Email <a href="mailto:refunds@abhartbrands.com" className="text-brand-primary-600 underline">refunds@abhartbrands.com</a> with your order ID</li>
+            <li>Email <a href="mailto:refunds@thegrowsetu.com" className="text-brand-primary-600 underline">refunds@thegrowsetu.com</a> with your order ID</li>
             <li>Attach supporting evidence (video/photos if applicable)</li>
             <li>Our team will respond within 2 business days</li>
             <li>Approved refunds are processed within 5-7 business days</li>
@@ -88,7 +88,7 @@ export default function RefundPage() {
 
         <section>
           <h2 className="text-2xl font-bold text-ink-900 mt-8 mb-3">8. Contact</h2>
-          <p>For refund queries, email <a href="mailto:refunds@abhartbrands.com" className="text-brand-primary-600 underline">refunds@abhartbrands.com</a>.</p>
+          <p>For refund queries, email <a href="mailto:refunds@thegrowsetu.com" className="text-brand-primary-600 underline">refunds@thegrowsetu.com</a>.</p>
         </section>
       </div>
     </div>

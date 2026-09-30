@@ -8,7 +8,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     <div className="min-h-screen bg-slate-50">
       {/* Top bar for mobile */}
       <div className="md:hidden bg-white border-b border-slate-200 px-4 py-3 flex items-center justify-between">
-        <Link href="/dashboard" className="text-lg font-bold text-indigo-700">Abhartbrands</Link>
+        <Link href="/dashboard" className="text-lg font-bold text-indigo-700">TheGrowSetu</Link>
         <Link href="/pools" className="text-sm text-indigo-600 font-medium">Browse Pools</Link>
       </div>
 

@@ -1,9 +1,9 @@
-# Abhartbrands Deployment Info
+# TheGrowSetu Deployment Info
 
-**Live URL**: https://abhartbrands.vercel.app
+**Live URL**: https://thegrowsetu.vercel.app
 
 **Admin Credentials**: 
-- `admin@abhartbrands.com` / `Admin@123` (or `admin@bharatbrand.com` if migration pending)
+- `admin@thegrowsetu.com` / `Admin@123`
 
 **Environment Variables Required (in Vercel settings)**:
 - `NEXT_PUBLIC_SUPABASE_URL`

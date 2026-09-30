@@ -1,6 +1,6 @@
 # Data Breach Notification Plan
 
-**Abhartbrands | Last Updated: 26 Sept 2026**
+**TheGrowSetu | Last Updated: 26 Sept 2026**
 
 ## Purpose
 This document outlines the procedure for detecting, responding to, and notifying authorities and users in case of a personal data breach, as required by the Digital Personal Data Protection Act, 2023 (DPDP Act).
@@ -11,7 +11,7 @@ This document outlines the procedure for detecting, responding to, and notifying
 - Supabase Database Logs (auth events, RLS violations)
 - Vercel Runtime Logs (unusual errors, 5xx spikes)
 - Upstash Redis (rate limit violations)
-- User reports (support@abhartbrands.com)
+- User reports (support@thegrowsetu.com)
 - Third-party reports (security researchers, breach databases)
 
 ### Detection Triggers
@@ -58,9 +58,9 @@ Every user notification must include:
 - Date and time of breach discovery
 - Type of personal data affected
 - Likely consequences
-- Measures taken by Abhartbrands
+- Measures taken by TheGrowSetu
 - Steps users should take (e.g., change password)
-- Contact: dpo@abhartbrands.com
+- Contact: dpo@thegrowsetu.com
 
 ## 6. Post-Incident Review
 
@@ -82,8 +82,8 @@ Within **30 days**:
 
 ## 8. Contact Information
 
-- **Grievance Officer:** dpo@abhartbrands.com
-- **Support:** support@abhartbrands.com
+- **Grievance Officer:** dpo@thegrowsetu.com
+- **Support:** support@thegrowsetu.com
 - **Emergency:** [Your Phone Number]
 
 ## 9. Review Schedule

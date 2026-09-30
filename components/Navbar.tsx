@@ -15,8 +15,8 @@ export default function Navbar() {
         <div className="flex justify-between h-16 items-center">
           <div className="flex-shrink-0">
             <Link href="/" className="text-2xl font-bold tracking-tight font-display">
-              <span className="text-brand-primary-700">Abhart</span>
-              <span className="text-brand-accent-500">brands</span>
+              <span className="text-brand-primary-700">The</span>
+              <span className="text-brand-accent-500">GrowSetu</span>
             </Link>
           </div>
           

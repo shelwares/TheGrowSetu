@@ -1,6 +1,6 @@
 export const metadata = {
-  title: 'Privacy Policy | Abhartbrands',
-  description: 'How Abhartbrands collects, uses, and protects your data',
+  title: 'Privacy Policy | TheGrowSetu',
+  description: 'How TheGrowSetu collects, uses, and protects your data',
 };
 
 export default function PrivacyPage() {
@@ -12,7 +12,7 @@ export default function PrivacyPage() {
       <div className="prose prose-ink max-w-none space-y-6 text-ink-700">
         <section>
           <h2 className="text-2xl font-bold text-ink-900 mt-8 mb-3">1. Introduction</h2>
-          <p>Abhartbrands ("we", "us", "our") is committed to protecting your privacy. This policy explains how we collect, use, and safeguard your personal information.</p>
+          <p>TheGrowSetu ("we", "us", "our") is committed to protecting your privacy. This policy explains how we collect, use, and safeguard your personal information.</p>
         </section>
 
         <section>
@@ -70,7 +70,7 @@ export default function PrivacyPage() {
             <li><strong>Portability:</strong> Request your data in a portable format</li>
             <li><strong>Opt-out:</strong> Unsubscribe from marketing emails</li>
           </ul>
-          <p className="mt-3">To exercise these rights, email <a href="mailto:privacy@abhartbrands.com" className="text-brand-primary-600 underline">privacy@abhartbrands.com</a>.</p>
+          <p className="mt-3">To exercise these rights, email <a href="mailto:privacy@thegrowsetu.com" className="text-brand-primary-600 underline">privacy@thegrowsetu.com</a>.</p>
         </section>
 
         <section>
@@ -114,7 +114,7 @@ export default function PrivacyPage() {
           </p>
           <ul className="list-disc pl-6 space-y-2 mt-3">
             <li>Deleting your account from Dashboard → Profile settings</li>
-            <li>Emailing <a href="mailto:privacy@abhartbrands.com" className="text-brand-primary-600 underline">privacy@abhartbrands.com</a></li>
+            <li>Emailing <a href="mailto:privacy@thegrowsetu.com" className="text-brand-primary-600 underline">privacy@thegrowsetu.com</a></li>
           </ul>
         </section>
 
@@ -123,9 +123,9 @@ export default function PrivacyPage() {
           <p>In accordance with the Digital Personal Data Protection Act, 2023 (DPDP Act), the details of our Grievance Officer are:</p>
           <div className="bg-ink-50 rounded-lg p-4 mt-3">
             <p><strong>Name:</strong> Data Protection Officer</p>
-            <p><strong>Email:</strong> <a href="mailto:dpo@abhartbrands.com" className="text-brand-primary-600 underline">dpo@abhartbrands.com</a></p>
+            <p><strong>Email:</strong> <a href="mailto:dpo@thegrowsetu.com" className="text-brand-primary-600 underline">dpo@thegrowsetu.com</a></p>
             <p><strong>Response Time:</strong> Within 30 days of receiving the complaint</p>
-            <p className="mt-2 text-sm text-ink-600">Abhartbrands, Maharashtra, India</p>
+            <p className="mt-2 text-sm text-ink-600">TheGrowSetu, Maharashtra, India</p>
           </div>
         </section>
 
@@ -144,7 +144,7 @@ export default function PrivacyPage() {
 
         <section>
           <h2 className="text-2xl font-bold text-ink-900 mt-8 mb-3">15. Contact</h2>
-          <p>For privacy concerns, contact us at <a href="mailto:privacy@abhartbrands.com" className="text-brand-primary-600 underline">privacy@abhartbrands.com</a>.</p>
+          <p>For privacy concerns, contact us at <a href="mailto:privacy@thegrowsetu.com" className="text-brand-primary-600 underline">privacy@thegrowsetu.com</a>.</p>
         </section>
       </div>
     </div>
