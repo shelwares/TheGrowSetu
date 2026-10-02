@@ -22,8 +22,8 @@ export default function AdminSidebar() {
     <aside className="w-60 bg-ink-900 text-ink-200 flex flex-col min-h-full">
       <div className="p-6 border-b border-ink-800">
         <Link href="/admin" className="text-xl font-bold font-display tracking-tight">
-          <span className="text-brand-primary-400">Abhart</span>
-          <span className="text-brand-accent-400">brands</span>
+          <span className="text-brand-primary-400">The</span>
+          <span className="text-brand-accent-400">GrowSetu</span>
           <span className="ml-2 text-xs font-normal bg-brand-accent-500/20 text-brand-accent-400 px-2 py-0.5 rounded-full">Admin</span>
         </Link>
         <p className="text-xs text-ink-500 mt-2 truncate">{user?.email}</p>
