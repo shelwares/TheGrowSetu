@@ -2,10 +2,27 @@ import { Ratelimit } from '@upstash/ratelimit';
 import { Redis } from '@upstash/redis';
 import { headers } from 'next/headers';
 
-const url = process.env.UPSTASH_REDIS_REST_URL;
-const token = process.env.UPSTASH_REDIS_REST_TOKEN;
+// Sanitize env vars: strip surrounding quotes and whitespace that Vercel
+// sometimes introduces, then validate the URL format before constructing the
+// client. A UrlError thrown at module scope would crash every server action.
+const rawUrl = process.env.UPSTASH_REDIS_REST_URL?.trim().replace(/^["']|["']$/g, '');
+const rawToken = process.env.UPSTASH_REDIS_REST_TOKEN?.trim().replace(/^["']|["']$/g, '');
 
-const redis = url && token ? new Redis({ url, token }) : null;
+const isValidUrl = typeof rawUrl === 'string' && rawUrl.startsWith('https://');
+const isValidToken = typeof rawToken === 'string' && rawToken.length > 10;
+
+let redis: InstanceType<typeof Redis> | null = null;
+if (isValidUrl && isValidToken) {
+  try {
+    redis = new Redis({ url: rawUrl!, token: rawToken! });
+  } catch (e) {
+    // Gracefully degrade — rate limiting disabled, but signup/login still work
+    console.error(
+      '[rate-limit] Redis init failed — rate limiting disabled:',
+      e instanceof Error ? e.message : String(e)
+    );
+  }
+}
 
 // Login: 5 attempts per 15 min per IP+email
 export const loginLimiter = redis
