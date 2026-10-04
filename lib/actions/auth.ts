@@ -74,7 +74,9 @@ export async function signup(formData: FormData) {
 
     const validated = SignupSchema.safeParse({ email, password, full_name, phone, company_name });
     if (!validated.success) {
-      return { error: validated.error.issues[0].message };
+      const firstIssue = validated.error.issues[0];
+      logger.warn('Signup validation failed', { ip, field: firstIssue.path.join('.'), message: firstIssue.message });
+      return { error: firstIssue.message };
     }
 
     const supabase = await getSupabaseServerClient();
@@ -92,15 +94,44 @@ export async function signup(formData: FormData) {
     });
 
     if (error) {
-      logger.error('Signup error', { error: error.message });
-      // Privacy: never expose whether email exists
-      return { error: 'Unable to create account. Please try again or contact support.' };
+      // Log the full Supabase error for debugging — message, status, and code
+      // NOTE: logger.error signature is (message, error?, meta?) — pass message string as error param
+      // so it is not String()-ified to "[object Object]"
+      logger.error('Signup Supabase error', error.message, {
+        errorStatus: (error as any).status,
+        errorCode: (error as any).code,
+        email: validated.data.email,
+        ip,
+      });
+
+      // Return specific user-facing messages based on the error
+      if (error.message?.toLowerCase().includes('user already registered')) {
+        return { error: 'An account with this email already exists. Please sign in instead.' };
+      }
+      if (error.message?.toLowerCase().includes('password')) {
+        return { error: `Password issue: ${error.message}` };
+      }
+      if (error.message?.toLowerCase().includes('smtp') || error.message?.toLowerCase().includes('email')) {
+        return { error: 'Unable to send confirmation email. Please try again later or contact support.' };
+      }
+      // Generic fallback — intentionally vague for privacy on unknown errors
+      return { error: `Unable to create account: ${error.message}` };
     }
 
+    // Supabase returns a user with identities=[] when the email is already confirmed
+    // (i.e., a "silent" duplicate — no error, but user already existed)
+    if (data.user && data.user.identities?.length === 0) {
+      logger.warn('Signup: email already registered (silent duplicate)', { email: validated.data.email, ip });
+      return { error: 'An account with this email already exists. Please sign in or reset your password.' };
+    }
+
+    logger.info('Signup success', { email: validated.data.email, ip });
     // Success — user must check email to confirm
     return { success: 'Account created! Please check your email to confirm before signing in.' };
   } catch (e: any) {
-    logger.error('Signup exception', { error: e.message });
+    // FIXED: Pass the raw exception `e` as the second arg, not a wrapper object.
+    // Previously `{ error: e.message }` was passed, which String()-ified to "[object Object]".
+    logger.error('Signup exception', e instanceof Error ? e : new Error(String(e)), { ip: 'unknown' });
     return { error: 'Something went wrong. Please try again.' };
   }
 }
