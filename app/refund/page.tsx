@@ -1,7 +1,10 @@
-export const metadata = {
-  title: 'Refund Policy | TheGrowSetu',
-  description: 'Refund and cancellation policy for TheGrowSetu orders',
-};
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Refund & Cancellation Policy',
+  description: 'TheGrowSetu refund and cancellation policy. Pool failure, quality issues, and buyer cancellation refund timelines.',
+  alternates: { canonical: 'https://thegrowsetu.com/refund' },
+}
 
 export default function RefundPage() {
   return (

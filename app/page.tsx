@@ -1,3 +1,4 @@
+import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getPools } from '@/lib/actions/pool'
 import PoolCard from '@/components/PoolCard'
@@ -5,6 +6,15 @@ import { Button } from '@/components/ui/button'
 import { FadeIn } from '@/components/motion/fade-in'
 import { StaggerList, StaggerItem } from '@/components/motion/stagger-list'
 import { CheckCircle2, ShieldCheck, Factory, Target, TrendingDown, Truck, PackageOpen } from 'lucide-react'
+import { OrganizationSchema } from '@/components/seo/structured-data'
+
+export const metadata: Metadata = {
+  title: 'TheGrowSetu — Factory Rates Without Factory MOQ',
+  description: "Join India's first B2B demand aggregation platform. Pool orders with other buyers to unlock factory-level pricing on perfume, garments, cosmetics and more. Low MOQ, factory rates.",
+  alternates: {
+    canonical: 'https://thegrowsetu.com',
+  },
+}
 
 export default async function Home() {
   const pools = await getPools()
@@ -14,6 +24,7 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col w-full">
+      <OrganizationSchema />
       {/* Hero Section */}
       <section className="bg-gradient-to-br from-brand-primary-900 to-brand-primary-700 text-white pt-24 pb-32 px-4 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] opacity-20"></div>

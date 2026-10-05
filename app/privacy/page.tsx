@@ -1,7 +1,10 @@
-export const metadata = {
-  title: 'Privacy Policy | TheGrowSetu',
-  description: 'How TheGrowSetu collects, uses, and protects your data',
-};
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Privacy Policy',
+  description: 'How TheGrowSetu collects, uses, and protects your personal data in accordance with DPDP Act 2023.',
+  alternates: { canonical: 'https://thegrowsetu.com/privacy' },
+}
 
 export default function PrivacyPage() {
   return (

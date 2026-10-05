@@ -1,7 +1,10 @@
-export const metadata = {
-  title: 'Terms & Conditions | TheGrowSetu',
-  description: 'Terms and conditions for using TheGrowSetu platform',
-};
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Terms & Conditions',
+  description: 'Terms and conditions for using the TheGrowSetu B2B pooled buying platform.',
+  alternates: { canonical: 'https://thegrowsetu.com/terms' },
+}
 
 export default function TermsPage() {
   return (

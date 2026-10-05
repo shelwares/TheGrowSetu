@@ -1,10 +1,15 @@
+import type { Metadata } from 'next'
 import { getPools } from '@/lib/actions/pool'
 import PoolCard from '@/components/PoolCard'
 
-export const metadata = {
-  title: 'Active Pools | TheGrowSetu',
-  description: 'Browse all active manufacturing pools and join to get factory direct pricing.',
+export const metadata: Metadata = {
+  title: 'Active Pools — Join Bulk Orders at Factory Prices',
+  description: 'Browse all active product pools. Join with any quantity, pool demand with other buyers, unlock factory pricing.',
+  alternates: {
+    canonical: 'https://thegrowsetu.com/pools',
+  },
 }
+
 
 export default async function PoolsPage() {
   const pools = await getPools()

@@ -18,21 +18,22 @@ const mono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL('https://thegrowsetu.com'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'https://thegrowsetu.com'),
   title: {
-    default: 'TheGrowSetu — Factory Rates. Without the Factory MOQ.',
+    default: 'TheGrowSetu — Factory Rates Without Factory MOQ',
     template: '%s | TheGrowSetu',
   },
-  description: 'India\'s B2B demand aggregation platform. Join collective buying pools with other business owners, unlock factory-direct pricing, and get quality-checked products delivered to your doorstep.',
+  description: "Join India's first B2B demand aggregation platform. Pool orders with other buyers to unlock factory-level pricing on perfume, garments, cosmetics and more. Low MOQ, factory rates.",
   keywords: [
-    'B2B pooling platform',
-    'factory direct pricing',
-    'wholesale India',
-    'bulk order pooling',
-    'D2B aggregation',
-    'low MOQ sourcing',
-    'TheGrowSetu',
-    'Indian manufacturers',
+    'B2B pooled buying',
+    'demand aggregation',
+    'factory rates India',
+    'low MOQ wholesale',
+    'D2C brand sourcing',
+    'bulk order platform',
+    'startup manufacturing',
+    'B2B procurement India',
+    'pool buying platform',
   ],
   authors: [{ name: 'TheGrowSetu' }],
   creator: 'TheGrowSetu',
@@ -42,16 +43,37 @@ export const metadata: Metadata = {
     locale: 'en_IN',
     url: 'https://thegrowsetu.com',
     siteName: 'TheGrowSetu',
-    title: 'TheGrowSetu — Factory Rates. Without the Factory MOQ.',
-    description: 'Join collective buying pools. Unlock factory pricing. Zero inventory risk.',
-    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'TheGrowSetu — B2B Pooling Platform' }],
+    title: 'TheGrowSetu — Factory Rates Without Factory MOQ',
+    description: "Join India's first B2B demand aggregation platform. Pool orders with other buyers to unlock factory-level pricing.",
+    images: [{ url: '/og-image.png', width: 1200, height: 630, alt: 'TheGrowSetu — Factory Rates Without Factory MOQ' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'TheGrowSetu — Factory Rates. Without the Factory MOQ.',
-    description: 'Join collective buying pools. Unlock factory pricing.',
+    title: 'TheGrowSetu — Factory Rates Without Factory MOQ',
+    description: "Join India's first B2B demand aggregation platform.",
     images: ['/og-image.png'],
   },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+      'max-video-preview': -1,
+    },
+  },
+  alternates: {
+    canonical: 'https://thegrowsetu.com',
+  },
+  ...(process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION
+    ? {
+        verification: {
+          google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
+        },
+      }
+    : {}),
 }
 
 import '@/lib/env'

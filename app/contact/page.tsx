@@ -1,7 +1,11 @@
-export const metadata = {
-  title: 'Contact Us | TheGrowSetu',
-  description: 'Get in touch with TheGrowSetu team',
-};
+import type { Metadata } from 'next'
+
+export const metadata: Metadata = {
+  title: 'Contact TheGrowSetu',
+  description: 'Get in touch with the TheGrowSetu team. Email support@thegrowsetu.com or use our contact form. We respond within 24 hours.',
+  alternates: { canonical: 'https://thegrowsetu.com/contact' },
+}
+
 
 export default function ContactPage() {
   return (

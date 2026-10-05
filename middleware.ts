@@ -20,6 +20,16 @@ export default middleware;
 
 export const config = {
   matcher: [
-    '/((?!_next/static|_next/image|favicon.ico|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    /*
+     * Match all request paths EXCEPT:
+     * - _next/static  (static files)
+     * - _next/image   (image optimisation)
+     * - Static file extensions (svg, png, jpg, etc.)
+     * - SEO / metadata routes that must be publicly reachable:
+     *     sitemap.xml, robots.txt, manifest.webmanifest,
+     *     icon, apple-icon, opengraph-image
+     */
+    '/((?!_next/static|_next/image|favicon\\.ico|sitemap\\.xml|robots\\.txt|manifest\\.webmanifest|icon|apple-icon|opengraph-image|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }
+
