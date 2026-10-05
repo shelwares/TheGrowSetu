@@ -78,6 +78,8 @@ import { getSupabaseServerClient } from '@/lib/supabase/server'
 import Navbar from '@/components/Navbar'
 import Footer from '@/components/Footer'
 
+import { GoogleAnalytics } from '@/components/analytics/google-analytics'
+
 export default async function RootLayout({
   children,
 }: {
@@ -97,6 +99,7 @@ export default async function RootLayout({
           <Footer />
           <Toaster position="top-right" richColors />
         </AuthProvider>
+        <GoogleAnalytics />
       </body>
     </html>
   )
