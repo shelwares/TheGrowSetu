@@ -6,7 +6,20 @@ export async function middleware(request: NextRequest) {
   const response = await updateSession(request) || NextResponse.next();
 
   // Add Security Headers
-  response.headers.set('Content-Security-Policy', "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; font-src 'self' data:; connect-src 'self' https:; frame-ancestors 'none';");
+  response.headers.set(
+    'Content-Security-Policy',
+    [
+      "default-src 'self'",
+      // Allow self + GA/GTM scripts (required for next/script strategy="afterInteractive")
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com",
+      "style-src 'self' 'unsafe-inline'",
+      "img-src 'self' data: https:",
+      "font-src 'self' data:",
+      // Allow GA beacon + Supabase API calls
+      "connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://analytics.google.com https://*.supabase.co",
+      "frame-ancestors 'none'",
+    ].join('; ')
+  );
   response.headers.set('X-Frame-Options', 'DENY');
   response.headers.set('X-Content-Type-Options', 'nosniff');
   response.headers.set('Referrer-Policy', 'strict-origin-when-cross-origin');
@@ -32,4 +45,3 @@ export const config = {
     '/((?!_next/static|_next/image|favicon\\.ico|sitemap\\.xml|robots\\.txt|manifest\\.webmanifest|icon|apple-icon|opengraph-image|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }
-
