@@ -1,4 +1,4 @@
--- Database Schema: Abhartbrands
+-- Database Schema: TheGrowSetu
 
 -- Enable UUID extension
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
@@ -6,12 +6,37 @@ CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 -- 1. profiles
 CREATE TABLE profiles (
     id UUID REFERENCES auth.users(id) PRIMARY KEY,
+    full_name TEXT,
     phone VARCHAR(20) NOT NULL,
     company_name VARCHAR(255) NOT NULL,
     address TEXT,
+    address_line1 TEXT,
+    address_line2 TEXT,
+    area TEXT,
+    city TEXT,
+    district TEXT,
+    state TEXT,
+    pincode TEXT,
+    country TEXT DEFAULT 'India',
     role VARCHAR(20) DEFAULT 'buyer' CHECK (role IN ('buyer', 'admin')),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
+
+-- Auto-create profile trigger on signup
+CREATE OR REPLACE FUNCTION public.handle_new_user()
+RETURNS TRIGGER AS $$
+BEGIN
+    INSERT INTO public.profiles (id, role)
+    VALUES (NEW.id, 'buyer')
+    ON CONFLICT (id) DO NOTHING;
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS on_auth_user_created ON auth.users;
+CREATE TRIGGER on_auth_user_created
+    AFTER INSERT ON auth.users
+    FOR EACH ROW EXECUTE FUNCTION public.handle_new_user();
 
 -- Admin check function to prevent infinite recursion
 CREATE OR REPLACE FUNCTION is_admin(user_id UUID)

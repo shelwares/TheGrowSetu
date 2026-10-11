@@ -1,3 +1,6 @@
+// TODO: Pending migration from middleware.ts to proxy.ts (Next.js 16.3).
+// Do not rename yet until full verification.
+// Reference: https://nextjs.org/docs/messages/middleware-to-proxy
 import { type NextRequest, NextResponse } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 

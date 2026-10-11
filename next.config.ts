@@ -1,32 +1,7 @@
 import type { NextConfig } from "next";
 
-const nextConfig: NextConfig = {
-  async headers() {
-    return [
-      {
-        // Apply these headers to all routes
-        source: '/(.*)',
-        headers: [
-          {
-            key: 'X-Content-Type-Options',
-            value: 'nosniff',
-          },
-          {
-            key: 'X-Frame-Options',
-            value: 'SAMEORIGIN',
-          },
-          {
-            key: 'Referrer-Policy',
-            value: 'strict-origin-when-cross-origin',
-          },
-          {
-            key: 'Permissions-Policy',
-            value: 'camera=(), microphone=(), geolocation=()',
-          },
-        ],
-      },
-    ];
-  },
-};
+// Security headers (Content-Security-Policy, X-Frame-Options: DENY, X-Content-Type-Options: nosniff,
+// Referrer-Policy, Permissions-Policy, Strict-Transport-Security) are centrally managed in middleware.ts.
+const nextConfig: NextConfig = {};
 
 export default nextConfig;

@@ -1,5 +1,15 @@
 import type { Metadata } from 'next'
 
+// ============================================================================
+// IMPORTANT: Business Contact Details
+// These constants hold the official contact details displayed on the website.
+// Ensure these values are verified and confirmed with final business info
+// prior to public marketing campaigns or commercial launch.
+// ============================================================================
+// TODO: User to confirm final values
+const BUSINESS_PHONE = "+91 8805984797";
+const BUSINESS_ADDRESS = "Ulhasnagar, Maharashtra, India — Serving Pan India";
+
 export const metadata: Metadata = {
   title: 'Contact TheGrowSetu',
   description: 'Get in touch with the TheGrowSetu team. Email support@thegrowsetu.com or use our contact form. We respond within 24 hours.',
@@ -49,8 +59,8 @@ export default function ContactPage() {
 
             <div>
               <p className="text-sm font-semibold text-ink-500 uppercase mb-1">Phone</p>
-              <a href="tel:+919999999999" className="text-brand-primary-600 hover:underline">
-                +91 99999 99999
+              <a href={`tel:${BUSINESS_PHONE.replace(/\s+/g, '')}`} className="text-brand-primary-600 hover:underline">
+                {BUSINESS_PHONE}
               </a>
             </div>
 
@@ -113,8 +123,7 @@ export default function ContactPage() {
         <h2 className="text-lg font-bold text-ink-900 mb-2">Registered Office</h2>
         <p className="text-ink-700 text-sm">
           TheGrowSetu<br />
-          [Your Business Address]<br />
-          Maharashtra, India
+          {BUSINESS_ADDRESS}
         </p>
         <p className="text-xs text-ink-500 mt-3">
           Update this with your actual registered business address.
