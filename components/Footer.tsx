@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { FadeIn } from '@/components/motion/fade-in'
 
 export default function Footer() {
@@ -16,9 +17,10 @@ export default function Footer() {
           </div>
           
           <div className="flex space-x-6">
-            <a href="#" className="hover:text-white transition-colors">Terms</a>
-            <a href="#" className="hover:text-white transition-colors">Privacy</a>
-            <a href="#" className="hover:text-white transition-colors">Contact</a>
+            <Link href="/terms" className="hover:text-white transition-colors">Terms</Link>
+            <Link href="/privacy" className="hover:text-white transition-colors">Privacy</Link>
+            <Link href="/refund" className="hover:text-white transition-colors">Refund</Link>
+            <Link href="/contact" className="hover:text-white transition-colors">Contact</Link>
           </div>
         </div>
         

@@ -24,7 +24,7 @@ export default function Navbar() {
             <Link href="/pools" className="text-ink-600 hover:text-brand-primary-600 font-medium transition-colors">
               Active Pools
             </Link>
-            <Link href="#" className="text-ink-600 hover:text-brand-primary-600 font-medium transition-colors">
+            <Link href="/how-it-works" className="text-ink-600 hover:text-brand-primary-600 font-medium transition-colors">
               How it Works
             </Link>
           </div>
