@@ -3,15 +3,16 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { useAuth } from '@/lib/auth/auth-context'
-import { LayoutDashboard, Package, Layers, ShoppingCart, ClipboardCheck, Globe, LogOut, Shield } from 'lucide-react'
+import { LayoutDashboard, Package, Layers, ShoppingCart, ClipboardCheck, Globe, LogOut, Shield, Inbox } from 'lucide-react'
 
 const navItems = [
-  { label: 'Overview',  href: '/admin',          icon: LayoutDashboard },
-  { label: 'Products',  href: '/admin/products',  icon: Package },
-  { label: 'Pools',     href: '/admin/pools',     icon: Layers },
-  { label: 'Orders',    href: '/admin/orders',    icon: ShoppingCart },
-  { label: 'QC',        href: '/admin/qc',        icon: ClipboardCheck },
-  { label: 'Security',  href: '/dashboard/security', icon: Shield },
+  { label: 'Overview',         href: '/admin',          icon: LayoutDashboard },
+  { label: 'Products',         href: '/admin/products',  icon: Package },
+  { label: 'Pools',            href: '/admin/pools',     icon: Layers },
+  { label: 'Orders',           href: '/admin/orders',    icon: ShoppingCart },
+  { label: 'QC',               href: '/admin/qc',        icon: ClipboardCheck },
+  { label: 'Product Requests', href: '/admin/requests',  icon: Inbox },
+  { label: 'Security',         href: '/dashboard/security', icon: Shield },
 ]
 
 export default function AdminSidebar() {

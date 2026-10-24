@@ -356,3 +356,78 @@ export async function getPoolBuyers(poolId: string) {
 
   return orders || [];
 }
+
+// ─── Product Requests ─────────────────────────────────────────────────────────
+export async function getProductRequests() {
+  try {
+    await requireAdmin()
+    const supabase = await getSupabaseServerClient()
+
+    const { data, error } = await supabase
+      .from('product_requests')
+      .select(`
+        id,
+        buyer_id,
+        product_name,
+        quantity,
+        timeline,
+        additional_details,
+        status,
+        created_at,
+        profiles (
+          full_name,
+          company_name,
+          phone
+        )
+      `)
+      .order('created_at', { ascending: false })
+
+    if (error) {
+      logger.error('Error fetching product requests in admin', error)
+      return []
+    }
+
+    const formatted = (data || []).map((item: any) => ({
+      id: item.id,
+      buyer_id: item.buyer_id,
+      product_name: item.product_name,
+      quantity: Number(item.quantity) || 0,
+      timeline: item.timeline,
+      additional_details: item.additional_details,
+      status: item.status,
+      created_at: item.created_at,
+      profiles: Array.isArray(item.profiles) ? (item.profiles[0] ?? null) : (item.profiles ?? null),
+    }))
+
+    return formatted
+  } catch (error) {
+    if ((error as Error).message === 'NEXT_REDIRECT') throw error
+    logger.error('Error in getProductRequests', error)
+    return []
+  }
+}
+
+export async function updateProductRequestStatus(requestId: string, status: string) {
+  try {
+    await requireAdmin()
+    const supabase = await getSupabaseServerClient()
+
+    const { error } = await supabase
+      .from('product_requests')
+      .update({ status })
+      .eq('id', requestId)
+
+    if (error) {
+      logger.error('Error updating product request status', error)
+      return { error: 'Failed to update status' }
+    }
+
+    revalidatePath('/admin/requests')
+    return { success: true }
+  } catch (error) {
+    if ((error as Error).message === 'NEXT_REDIRECT') throw error
+    logger.error('Error in updateProductRequestStatus', error)
+    return { error: 'An unexpected error occurred' }
+  }
+}
+

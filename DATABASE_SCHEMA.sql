@@ -139,3 +139,31 @@ CREATE POLICY "Buyers can view own QC reports" ON qc_reports FOR SELECT USING (
 );
 CREATE POLICY "Only admins can view QC reports" ON qc_reports FOR SELECT USING (is_admin(auth.uid()));
 CREATE POLICY "Only admins can modify QC reports" ON qc_reports FOR ALL USING (is_admin(auth.uid()));
+
+-- 7. product_requests
+CREATE TABLE public.product_requests (
+    id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+    buyer_id UUID REFERENCES public.profiles(id) ON DELETE CASCADE,
+    product_name TEXT NOT NULL,
+    quantity INTEGER NOT NULL,
+    timeline TEXT NOT NULL,
+    additional_details TEXT,
+    status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'reviewing', 'sourced', 'rejected')),
+    created_at TIMESTAMPTZ DEFAULT NOW()
+);
+
+-- RLS Policies
+ALTER TABLE public.product_requests ENABLE ROW LEVEL SECURITY;
+
+-- Buyers can insert their own requests
+CREATE POLICY "Buyers can insert requests" ON public.product_requests 
+FOR INSERT TO authenticated WITH CHECK (auth.uid() = buyer_id);
+
+-- Buyers can view their own requests
+CREATE POLICY "Buyers can view own requests" ON public.product_requests 
+FOR SELECT TO authenticated USING (auth.uid() = buyer_id);
+
+-- Admins can view and update all requests
+CREATE POLICY "Admins can view all requests" ON public.product_requests 
+FOR ALL TO authenticated USING (public.is_admin(auth.uid()));
+
