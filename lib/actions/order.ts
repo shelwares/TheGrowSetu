@@ -157,7 +157,15 @@ export async function getOrderById(orderId: string) {
       return null
     }
 
-    return data
+    if (!data) return null
+
+    const profile = Array.isArray(data.profiles) ? data.profiles[0] : data.profiles
+    const buyerName = profile?.full_name || user.user_metadata?.full_name || null
+
+    return {
+      ...data,
+      buyer_name: buyerName,
+    }
   } catch (error) {
     logger.error('Error in getOrderById', error);
     return null;
