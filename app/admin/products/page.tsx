@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getAdminProducts } from '@/lib/actions/admin'
 import Link from 'next/link'
+import ProductListClient from './ProductListClient'
 
 export default async function AdminProductsPage() {
   const products = await getAdminProducts()
@@ -27,38 +28,7 @@ export default async function AdminProductsPage() {
           </Link>
         </div>
       ) : (
-        <div className="bg-white rounded-2xl shadow-sm border border-slate-200 overflow-hidden">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-slate-50 border-b border-slate-200 text-xs text-slate-500 uppercase font-medium">
-                <th className="px-6 py-3 text-left">Product</th>
-                <th className="px-6 py-3 text-left">Category</th>
-                <th className="px-6 py-3 text-left">Description</th>
-                <th className="px-6 py-3 text-left">Created</th>
-                <th className="px-6 py-3"></th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100">
-              {products.map((p: any) => (
-                <tr key={p.id} className="hover:bg-slate-50 transition-colors">
-                  <td className="px-6 py-4 font-semibold text-slate-900">{p.name}</td>
-                  <td className="px-6 py-4">
-                    <span className="text-xs px-2 py-1 bg-indigo-50 text-indigo-700 rounded-full font-medium">
-                      {p.category || 'General'}
-                    </span>
-                  </td>
-                  <td className="px-6 py-4 text-slate-500 max-w-xs truncate">{p.description || '—'}</td>
-                  <td className="px-6 py-4 text-slate-500 text-xs">{new Date(p.created_at).toLocaleDateString('en-IN')}</td>
-                  <td className="px-6 py-4">
-                    <Link href={`/admin/pools/new?product_id=${p.id}`} className="text-xs font-medium text-amber-600 hover:text-amber-700">
-                      Launch Pool →
-                    </Link>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
+        <ProductListClient products={products} />
       )}
     </div>
   )

@@ -105,6 +105,45 @@ export async function createProduct(formData: FormData) {
   }
 }
 
+export async function deleteProduct(productId: string) {
+  try {
+    await requireAdmin()
+    const supabase = await getSupabaseServerClient()
+
+    // Safety check: ensure no pools are linked to this product
+    const { count, error: poolCheckError } = await supabase
+      .from('pools')
+      .select('id', { count: 'exact', head: true })
+      .eq('product_id', productId)
+
+    if (poolCheckError) {
+      logger.error('Error checking pools for product', { productId, error: poolCheckError })
+      return { error: 'Failed to verify product safety. Please try again.' }
+    }
+
+    if ((count ?? 0) > 0) {
+      return { error: 'Cannot delete product. It is linked to existing pools.' }
+    }
+
+    const { error } = await supabase
+      .from('products')
+      .delete()
+      .eq('id', productId)
+
+    if (error) {
+      logger.error('Error deleting product', { productId, error })
+      return { error: 'Failed to delete product' }
+    }
+
+    revalidatePath('/admin/products')
+    return { success: true }
+  } catch (error) {
+    if ((error as Error).message === 'NEXT_REDIRECT') throw error
+    logger.error('Error in deleteProduct', error)
+    return { error: 'An unexpected error occurred' }
+  }
+}
+
 // ─── Pools ────────────────────────────────────────────────────────────────────
 export async function getAdminPools() {
   try {
