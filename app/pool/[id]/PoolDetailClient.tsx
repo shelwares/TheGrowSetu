@@ -13,13 +13,15 @@ import { Card } from '@/components/ui/card'
 import { FadeIn } from '@/components/motion/fade-in'
 import Image from 'next/image'
 import { motion, useReducedMotion } from 'framer-motion'
-import { Minus, Plus, Lock, Clock, ImageIcon } from 'lucide-react'
+import { Minus, Plus, Lock, Clock, ImageIcon, ZoomIn } from 'lucide-react'
+import ImageLightbox from '@/components/ui/ImageLightbox'
 
 export default function PoolDetailClient({ pool }: { pool: any }) {
   const [quantity, setQuantity] = useState<number>(pool.pool_tiers?.[0]?.min_qty || 1)
   const [projectedPrice, setProjectedPrice] = useState<number>(pool.pool_tiers?.[0]?.buyer_price || 0)
   const [logisticsFee, setLogisticsFee] = useState<number>(0)
   const [isJoining, setIsJoining] = useState(false)
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false)
   const shouldReduceMotion = useReducedMotion()
   
   const { user } = useAuth()
@@ -93,16 +95,40 @@ export default function PoolDetailClient({ pool }: { pool: any }) {
           <div className="lg:col-span-3 space-y-6">
             <FadeIn>
               {/* Image */}
-              <div className="aspect-video bg-ink-100 rounded-2xl overflow-hidden border border-ink-200 shadow-sm relative">
+              <div
+                className={`aspect-video bg-ink-100 rounded-2xl overflow-hidden border border-ink-200 shadow-sm relative group ${
+                  product?.base_image ? 'cursor-pointer' : ''
+                }`}
+                onClick={() => {
+                  if (product?.base_image) setIsLightboxOpen(true)
+                }}
+                role={product?.base_image ? 'button' : undefined}
+                tabIndex={product?.base_image ? 0 : undefined}
+                onKeyDown={(e) => {
+                  if (product?.base_image && (e.key === 'Enter' || e.key === ' ')) {
+                    e.preventDefault()
+                    setIsLightboxOpen(true)
+                  }
+                }}
+                aria-label={product?.base_image ? 'View full screen product image' : undefined}
+              >
                 {product?.base_image ? (
-                  <Image
-                    src={product.base_image}
-                    alt={product.name || 'Product image'}
-                    fill
-                    className="object-cover"
-                    sizes="(max-width: 1024px) 100vw, 60vw"
-                    priority
-                  />
+                  <>
+                    <Image
+                      src={product.base_image}
+                      alt={product.name || 'Product image'}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
+                      sizes="(max-width: 1024px) 100vw, 60vw"
+                      priority
+                    />
+                    <div className="absolute inset-0 bg-black/30 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center pointer-events-none">
+                      <div className="bg-black/60 text-white px-3.5 py-2 rounded-full backdrop-blur-sm shadow-lg flex items-center gap-2 text-xs font-medium">
+                        <ZoomIn className="w-4 h-4" />
+                        <span>View Full Screen</span>
+                      </div>
+                    </div>
+                  </>
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center text-ink-400">
                     <ImageIcon className="w-12 h-12 mb-2" />
@@ -284,6 +310,12 @@ export default function PoolDetailClient({ pool }: { pool: any }) {
           </div>
         </div>
       </div>
+      <ImageLightbox
+        isOpen={isLightboxOpen}
+        onClose={() => setIsLightboxOpen(false)}
+        src={product?.base_image}
+        alt={product?.name}
+      />
     </div>
   )
 }

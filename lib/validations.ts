@@ -67,6 +67,10 @@ export const CreateProductSchema = z.object({
   base_image: z.string().optional(),
 });
 
+export const ProductSchema = CreateProductSchema;
+export const UpdateProductSchema = CreateProductSchema;
+
+
 export const CreatePoolSchema = z.object({
   product_id: z.string().uuid(),
   target_quantity: z.number().int().positive(),

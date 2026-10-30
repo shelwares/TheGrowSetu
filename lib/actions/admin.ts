@@ -5,7 +5,7 @@ import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 import { getSupabaseServerClient } from '../supabase/server'
 import { logger } from '../logger'
-import { CreateProductSchema, CreatePoolSchema, UpdateOrderStatusSchema } from '../validations'
+import { CreateProductSchema, ProductSchema, CreatePoolSchema, UpdateOrderStatusSchema } from '../validations'
 
 // ─── Admin Guard ───────────────────────────────────────────────────────────────
 export async function requireAdmin() {
@@ -104,6 +104,67 @@ export async function createProduct(formData: FormData) {
     return { error: 'An unexpected error occurred' };
   }
 }
+
+export async function getAdminProduct(productId: string) {
+  try {
+    await requireAdmin()
+    const supabase = await getSupabaseServerClient()
+    const { data, error } = await supabase
+      .from('products')
+      .select('id, name, description, category, base_image, created_at')
+      .eq('id', productId)
+      .single()
+
+    if (error || !data) {
+      logger.error('Error fetching admin product', { productId, error })
+      return null
+    }
+    return data
+  } catch (error) {
+    if ((error as Error).message === 'NEXT_REDIRECT') throw error
+    logger.error('Error in getAdminProduct', error)
+    return null
+  }
+}
+
+export async function updateProduct(productId: string, formData: FormData) {
+  try {
+    await requireAdmin()
+
+    const data = {
+      name: formData.get('name') as string,
+      description: formData.get('description') as string,
+      category: formData.get('category') as string,
+      base_image: (formData.get('base_image') as string) || undefined,
+    }
+
+    const validatedData = ProductSchema.safeParse(data)
+    if (!validatedData.success) {
+      logger.warn('Update product validation failed', { errors: validatedData.error.issues })
+      return { error: 'Invalid input data' }
+    }
+
+    const supabase = await getSupabaseServerClient()
+
+    const { error } = await supabase
+      .from('products')
+      .update(validatedData.data)
+      .eq('id', productId)
+
+    if (error) {
+      logger.error('Error updating product', { productId, error })
+      return { error: 'Failed to update product' }
+    }
+
+    revalidatePath('/admin/products')
+    return { success: true }
+  } catch (error) {
+    if ((error as Error).message === 'NEXT_REDIRECT') throw error
+    logger.error('Error in updateProduct', error)
+    return { error: 'An unexpected error occurred' }
+  }
+}
+
 
 export async function deleteProduct(productId: string) {
   try {
