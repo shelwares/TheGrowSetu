@@ -37,15 +37,34 @@ export async function getPools() {
   }
 }
 
-export async function getPoolById(id: string) {
+export async function getPoolById(id: string): Promise<any> {
   try {
     const supabase = await getSupabaseServerClient()
     const { data, error } = await supabase
       .from('pools')
       .select(`
-        *,
-        products (*),
-        pool_tiers (*)
+        id,
+        status,
+        target_quantity,
+        current_quantity,
+        deadline,
+        created_at,
+        product_id,
+        products (
+          id,
+          name,
+          description,
+          category,
+          base_image
+        ),
+        pool_tiers (
+          id,
+          pool_id,
+          min_qty,
+          max_qty,
+          buyer_price,
+          logistics_fee
+        )
       `)
       .eq('id', id)
       .maybeSingle()
@@ -55,11 +74,17 @@ export async function getPoolById(id: string) {
       return null
     }
 
-    if (data?.pool_tiers) {
+    if (!data) return null
+
+    if (data.pool_tiers) {
       data.pool_tiers.sort((a: any, b: any) => a.min_qty - b.min_qty)
     }
 
-    return data
+    const product = Array.isArray(data.products) ? data.products[0] : data.products
+    return {
+      ...data,
+      products: product,
+    }
   } catch (error) {
     logger.error('Error in getPoolById', error)
     return null

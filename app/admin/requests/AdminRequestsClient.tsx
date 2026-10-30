@@ -4,7 +4,21 @@ import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { updateProductRequestStatus } from '@/lib/actions/admin'
-import DemandChart from './DemandChart'
+import dynamic from 'next/dynamic'
+
+// Dynamically import the heavy Recharts-based chart — defers the entire recharts
+// bundle from the initial page load. Only loaded when admin visits this page.
+const DemandChart = dynamic(() => import('./DemandChart'), {
+  ssr: false,
+  loading: () => (
+    <div className="h-80 w-full flex items-center justify-center bg-slate-50/50 rounded-xl border border-slate-100">
+      <div className="animate-pulse flex flex-col items-center gap-3 w-full px-8">
+        <div className="h-4 w-48 bg-slate-200 rounded" />
+        <div className="h-56 w-full bg-slate-200 rounded-xl" />
+      </div>
+    </div>
+  ),
+})
 import {
   Copy,
   Check,

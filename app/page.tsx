@@ -112,9 +112,9 @@ export default async function Home() {
           
           {featuredPools.length > 0 ? (
             <StaggerList className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-              {featuredPools.map((pool) => (
+              {featuredPools.map((pool, index) => (
                 <StaggerItem key={pool.id}>
-                  <PoolCard pool={pool} />
+                  <PoolCard pool={pool} priority={index < 3} />
                 </StaggerItem>
               ))}
             </StaggerList>

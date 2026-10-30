@@ -1,6 +1,6 @@
 "use client"
 import * as React from "react"
-import { motion, HTMLMotionProps } from "framer-motion"
+import { motion, HTMLMotionProps, useReducedMotion } from "framer-motion"
 import { cn } from "@/lib/utils"
 
 interface StaggerListProps extends HTMLMotionProps<"div"> {
@@ -10,9 +10,19 @@ interface StaggerListProps extends HTMLMotionProps<"div"> {
 export function StaggerList({
   children,
   className,
-  staggerDelay = 0.05,
+  staggerDelay = 0.04, // Slightly faster than before for snappier mobile feel
   ...props
 }: StaggerListProps) {
+  const shouldReduceMotion = useReducedMotion()
+
+  if (shouldReduceMotion) {
+    return (
+      <div className={cn(className)}>
+        {children as React.ReactNode}
+      </div>
+    )
+  }
+
   return (
     <motion.div
       initial="hidden"
@@ -37,6 +47,16 @@ export function StaggerItem({
   className,
   ...props
 }: HTMLMotionProps<"div">) {
+  const shouldReduceMotion = useReducedMotion()
+
+  if (shouldReduceMotion) {
+    return (
+      <div className={cn(className)}>
+        {children as React.ReactNode}
+      </div>
+    )
+  }
+
   return (
     <motion.div
       variants={{

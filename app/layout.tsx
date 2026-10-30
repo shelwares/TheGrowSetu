@@ -6,15 +6,21 @@ import { Toaster } from 'sonner'
 const jakarta = Plus_Jakarta_Sans({ 
   subsets: ['latin'], 
   variable: '--font-display',
-  weight: ['400', '500', '600', '700', '800']
+  weight: ['400', '500', '600', '700', '800'],
+  display: 'swap',
+  preload: true,
 });
 const inter = Inter({ 
   subsets: ['latin'], 
-  variable: '--font-body' 
+  variable: '--font-body',
+  display: 'swap',
+  preload: true,
 });
 const mono = JetBrains_Mono({ 
   subsets: ['latin'], 
-  variable: '--font-mono' 
+  variable: '--font-mono',
+  display: 'swap',
+  preload: false, // non-critical: only used in code blocks
 });
 
 export const metadata: Metadata = {

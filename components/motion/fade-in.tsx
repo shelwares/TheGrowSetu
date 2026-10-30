@@ -1,6 +1,6 @@
 "use client"
 import * as React from "react"
-import { motion, HTMLMotionProps } from "framer-motion"
+import { motion, HTMLMotionProps, useReducedMotion } from "framer-motion"
 import { cn } from "@/lib/utils"
 
 interface FadeInProps extends HTMLMotionProps<"div"> {
@@ -17,12 +17,22 @@ export function FadeIn({
   direction = "up",
   ...props
 }: FadeInProps) {
+  const shouldReduceMotion = useReducedMotion()
+
   const directions = {
     up: { y: 20 },
     down: { y: -20 },
     left: { x: 20 },
     right: { x: -20 },
     none: { x: 0, y: 0 },
+  }
+
+  if (shouldReduceMotion) {
+    return (
+      <div className={cn(className)}>
+        {children as React.ReactNode}
+      </div>
+    )
   }
 
   return (

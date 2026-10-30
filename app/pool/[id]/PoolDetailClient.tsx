@@ -11,7 +11,8 @@ import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
 import { FadeIn } from '@/components/motion/fade-in'
-import { motion } from 'framer-motion'
+import Image from 'next/image'
+import { motion, useReducedMotion } from 'framer-motion'
 import { Minus, Plus, Lock, Clock, ImageIcon } from 'lucide-react'
 
 export default function PoolDetailClient({ pool }: { pool: any }) {
@@ -19,6 +20,7 @@ export default function PoolDetailClient({ pool }: { pool: any }) {
   const [projectedPrice, setProjectedPrice] = useState<number>(pool.pool_tiers?.[0]?.buyer_price || 0)
   const [logisticsFee, setLogisticsFee] = useState<number>(0)
   const [isJoining, setIsJoining] = useState(false)
+  const shouldReduceMotion = useReducedMotion()
   
   const { user } = useAuth()
   const router = useRouter()
@@ -91,9 +93,16 @@ export default function PoolDetailClient({ pool }: { pool: any }) {
           <div className="lg:col-span-3 space-y-6">
             <FadeIn>
               {/* Image */}
-              <div className="aspect-video bg-ink-100 rounded-2xl overflow-hidden border border-ink-200 shadow-sm">
+              <div className="aspect-video bg-ink-100 rounded-2xl overflow-hidden border border-ink-200 shadow-sm relative">
                 {product?.base_image ? (
-                  <img src={product.base_image} alt={product.name} className="w-full h-full object-cover" />
+                  <Image
+                    src={product.base_image}
+                    alt={product.name || 'Product image'}
+                    fill
+                    className="object-cover"
+                    sizes="(max-width: 1024px) 100vw, 60vw"
+                    priority
+                  />
                 ) : (
                   <div className="w-full h-full flex flex-col items-center justify-center text-ink-400">
                     <ImageIcon className="w-12 h-12 mb-2" />
@@ -129,12 +138,19 @@ export default function PoolDetailClient({ pool }: { pool: any }) {
                   </div>
                 </div>
                 <div className="w-full bg-ink-100 rounded-full h-3 overflow-hidden">
-                  <motion.div
-                    className="bg-brand-primary-500 h-full rounded-full"
-                    initial={{ width: 0 }}
-                    animate={{ width: `${progressPercentage}%` }}
-                    transition={{ duration: 1.2, ease: 'easeOut' }}
-                  />
+                  {shouldReduceMotion ? (
+                    <div
+                      className="bg-brand-primary-500 h-full rounded-full"
+                      style={{ width: `${progressPercentage}%` }}
+                    />
+                  ) : (
+                    <motion.div
+                      className="bg-brand-primary-500 h-full rounded-full"
+                      initial={{ width: 0 }}
+                      animate={{ width: `${progressPercentage}%` }}
+                      transition={{ duration: 1.2, ease: 'easeOut' }}
+                    />
+                  )}
                 </div>
                 <div className="flex justify-between text-sm text-ink-600 mt-3 font-medium">
                   <span>{pool.current_quantity.toLocaleString()} units committed</span>
@@ -205,19 +221,15 @@ export default function PoolDetailClient({ pool }: { pool: any }) {
                         <span className="font-medium text-ink-900">₹{(quantity * projectedPrice).toLocaleString()}</span>
                       </div>
                       
-                      <motion.div
-                        key={`logistics-${logisticsFee}`}
-                        initial={{ backgroundColor: "rgba(0,0,0,0)" }}
-                        animate={{
-                          backgroundColor:
-                            logisticsFee === 0
-                              ? "rgba(16, 185, 129, 0.10)"
-                              : logisticsFee <= 25
-                              ? "rgba(245, 158, 11, 0.10)"
-                              : "rgba(239, 68, 68, 0.08)",
-                        }}
-                        transition={{ duration: 0.4 }}
-                        className="flex justify-between px-2 py-1 -mx-2 rounded-md"
+                      {/* Logistics row — skip background-color animation on reduced motion (heavy GPU property) */}
+                      <div
+                        className={`flex justify-between px-2 py-1 -mx-2 rounded-md transition-colors duration-300 ${
+                          logisticsFee === 0
+                            ? 'bg-emerald-500/10'
+                            : logisticsFee <= 25
+                            ? 'bg-amber-500/10'
+                            : 'bg-red-500/8'
+                        }`}
                       >
                         <span className="text-ink-600">Logistics</span>
                         <span
@@ -231,18 +243,24 @@ export default function PoolDetailClient({ pool }: { pool: any }) {
                         >
                           {logisticsFee === 0 ? "Free 🎉" : `₹${logisticsFee}`}
                         </span>
-                      </motion.div>
+                      </div>
 
                       <div className="pt-4 border-t border-ink-200 flex justify-between items-end">
                         <span className="font-bold text-ink-900">Total</span>
-                        <motion.span
-                          key={quantity + projectedPrice}
-                          initial={{ scale: 1.1, color: '#4F46E5' }}
-                          animate={{ scale: 1, color: '#1C1917' }}
-                          className="text-2xl font-bold text-ink-900 font-display"
-                        >
-                          ₹{((quantity * projectedPrice) + logisticsFee).toLocaleString()}
-                        </motion.span>
+                        {shouldReduceMotion ? (
+                          <span className="text-2xl font-bold text-ink-900 font-display">
+                            ₹{((quantity * projectedPrice) + logisticsFee).toLocaleString()}
+                          </span>
+                        ) : (
+                          <motion.span
+                            key={quantity + projectedPrice}
+                            initial={{ scale: 1.1, color: '#4F46E5' }}
+                            animate={{ scale: 1, color: '#1C1917' }}
+                            className="text-2xl font-bold text-ink-900 font-display"
+                          >
+                            ₹{((quantity * projectedPrice) + logisticsFee).toLocaleString()}
+                          </motion.span>
+                        )}
                       </div>
                     </div>
 

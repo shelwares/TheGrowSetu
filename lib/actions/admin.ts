@@ -62,7 +62,7 @@ export async function getAdminProducts() {
     const supabase = await getSupabaseServerClient()
     const { data } = await supabase
       .from('products')
-      .select('*')
+      .select('id, name, description, category, base_image, created_at')
       .order('created_at', { ascending: false })
     return data || []
   } catch (error) {
@@ -160,19 +160,47 @@ export async function getAdminPools() {
   }
 }
 
-export async function getAdminPool(poolId: string) {
+export async function getAdminPool(poolId: string): Promise<any> {
   try {
     await requireAdmin()
     const supabase = await getSupabaseServerClient()
     const { data } = await supabase
       .from('pools')
-      .select(`*, products(*), pool_tiers(*)`)
+      .select(`
+        id,
+        status,
+        target_quantity,
+        current_quantity,
+        deadline,
+        created_at,
+        product_id,
+        products (
+          id,
+          name,
+          category,
+          description,
+          base_image
+        ),
+        pool_tiers (
+          id,
+          pool_id,
+          min_qty,
+          max_qty,
+          buyer_price,
+          logistics_fee
+        )
+      `)
       .eq('id', poolId)
       .single()
-    if (data?.pool_tiers) {
+    if (!data) return null;
+    if (data.pool_tiers) {
       data.pool_tiers.sort((a: any, b: any) => a.min_qty - b.min_qty)
     }
-    return data
+    const product = Array.isArray(data.products) ? data.products[0] : data.products
+    return {
+      ...data,
+      products: product,
+    }
   } catch (error) {
     logger.error('Error in getAdminPool', error);
     return null;

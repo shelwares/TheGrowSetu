@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { getSupabaseClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
@@ -213,7 +214,14 @@ export default function SecurityPage() {
 
                 {qrCode && (
                   <div className="flex justify-center bg-white p-4 rounded-lg border border-ink-200">
-                    <img src={qrCode} alt="QR Code" className="w-48 h-48" />
+                    <Image
+                      src={qrCode}
+                      alt="QR Code"
+                      width={192}
+                      height={192}
+                      unoptimized
+                      className="w-48 h-48"
+                    />
                   </div>
                 )}
 

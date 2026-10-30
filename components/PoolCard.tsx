@@ -2,18 +2,21 @@
 'use client'
 
 import Link from 'next/link'
+import Image from 'next/image'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { motion } from 'framer-motion'
+import { motion, useReducedMotion } from 'framer-motion'
 import { Badge } from '@/components/ui/badge'
 
 type PoolCardProps = {
   pool: any
+  priority?: boolean
 }
 
-export default function PoolCard({ pool }: PoolCardProps) {
+export default function PoolCard({ pool, priority = false }: PoolCardProps) {
   const product = pool.products
   const progressPercentage = Math.min(100, Math.round((pool.current_quantity / pool.target_quantity) * 100))
+  const shouldReduceMotion = useReducedMotion()
   
   let currentPrice = pool.pool_tiers?.[0]?.buyer_price
   if (pool.pool_tiers && pool.pool_tiers.length > 0) {
@@ -27,10 +30,13 @@ export default function PoolCard({ pool }: PoolCardProps) {
     <Card className="overflow-hidden flex flex-col h-full group p-0">
       <div className="aspect-[4/3] bg-ink-100 relative overflow-hidden rounded-t-2xl">
         {product?.base_image ? (
-          <img 
+          <Image 
             src={product.base_image} 
-            alt={product.name} 
-            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            alt={product.name || 'Product image'}
+            fill
+            className="object-cover group-hover:scale-105 transition-transform duration-300"
+            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+            priority={priority}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center text-ink-400">
@@ -54,12 +60,19 @@ export default function PoolCard({ pool }: PoolCardProps) {
             <span className="text-brand-primary-600 font-semibold">{progressPercentage}%</span>
           </div>
           <div className="w-full bg-ink-100 rounded-full h-2 overflow-hidden">
-            <motion.div 
-              className="bg-brand-primary-500 h-full rounded-full"
-              initial={{ width: 0 }}
-              animate={{ width: `${progressPercentage}%` }}
-              transition={{ duration: 1, ease: 'easeOut' }}
-            />
+            {shouldReduceMotion ? (
+              <div
+                className="bg-brand-primary-500 h-full rounded-full"
+                style={{ width: `${progressPercentage}%` }}
+              />
+            ) : (
+              <motion.div 
+                className="bg-brand-primary-500 h-full rounded-full"
+                initial={{ width: 0 }}
+                animate={{ width: `${progressPercentage}%` }}
+                transition={{ duration: 1, ease: 'easeOut' }}
+              />
+            )}
           </div>
           <div className="flex justify-between text-xs text-ink-500 mt-2">
             <span>{pool.current_quantity} ordered</span>
