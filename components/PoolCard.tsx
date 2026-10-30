@@ -1,12 +1,14 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
 
+import { useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import { Card } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
 import { motion, useReducedMotion } from 'framer-motion'
 import { Badge } from '@/components/ui/badge'
+import { ImageIcon } from 'lucide-react'
 
 type PoolCardProps = {
   pool: any
@@ -14,7 +16,9 @@ type PoolCardProps = {
 }
 
 export default function PoolCard({ pool, priority = false }: PoolCardProps) {
+  const [imageError, setImageError] = useState(false)
   const product = pool.products
+  const imageUrl = product?.base_image?.trim()
   const progressPercentage = Math.min(100, Math.round((pool.current_quantity / pool.target_quantity) * 100))
   const shouldReduceMotion = useReducedMotion()
   
@@ -29,19 +33,21 @@ export default function PoolCard({ pool, priority = false }: PoolCardProps) {
   return (
     <Card className="overflow-hidden flex flex-col h-full group p-0">
       <div className="aspect-[4/3] bg-ink-100 relative overflow-hidden rounded-t-2xl">
-        {product?.base_image ? (
+        {!imageUrl || imageError ? (
+          <div className="absolute inset-0 bg-gray-100 flex flex-col items-center justify-center text-gray-400">
+            <ImageIcon className="w-8 h-8 mb-2 opacity-50" />
+            <span className="text-xs font-medium">No Image</span>
+          </div>
+        ) : (
           <Image 
-            src={product.base_image} 
-            alt={product.name || 'Product image'}
+            src={imageUrl} 
+            alt={product?.name || 'Product image'}
             fill
             className="object-cover group-hover:scale-105 transition-transform duration-300"
             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
             priority={priority}
+            onError={() => setImageError(true)}
           />
-        ) : (
-          <div className="w-full h-full flex items-center justify-center text-ink-400">
-            [No Image]
-          </div>
         )}
         <div className="absolute top-3 left-3">
           <Badge className="bg-white/90 backdrop-blur-md text-brand-primary-700 hover:bg-white/90 border-0 shadow-sm">
