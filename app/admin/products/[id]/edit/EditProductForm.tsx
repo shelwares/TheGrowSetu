@@ -61,6 +61,7 @@ export default function EditProductForm({ product }: { product: Product }) {
 
         if (uploadRes.error || !uploadRes.publicUrl) {
           const errorMsg = uploadRes.error || 'Failed to upload image'
+          console.error('[EditProductForm] Image upload failed:', errorMsg)
           setError(errorMsg)
           toast.error(errorMsg)
           setIsSubmitting(false)
@@ -82,6 +83,7 @@ export default function EditProductForm({ product }: { product: Product }) {
 
       const result = await updateProduct(product.id, formData)
       if (result?.error) {
+        console.error('[EditProductForm] Update product failed:', result.error)
         setError(result.error)
         toast.error(result.error)
       } else {
@@ -89,8 +91,9 @@ export default function EditProductForm({ product }: { product: Product }) {
         router.push('/admin/products')
         router.refresh()
       }
-    } catch {
-      const msg = 'An unexpected error occurred while updating the product.'
+    } catch (err: unknown) {
+      console.error('[EditProductForm] Error during form submission:', err)
+      const msg = err instanceof Error ? err.message : 'An unexpected error occurred while updating the product.'
       setError(msg)
       toast.error(msg)
     } finally {

@@ -94,14 +94,14 @@ export async function createProduct(formData: FormData) {
 
     if (error) {
       logger.error('Error creating product', error);
-      return { error: 'Failed to create product' }
+      return { error: error.message || 'Failed to create product' }
     }
     revalidatePath('/admin/products')
     redirect('/admin/products')
   } catch (error) {
     if ((error as Error).message === 'NEXT_REDIRECT') throw error;
     logger.error('Error in createProduct', error);
-    return { error: 'An unexpected error occurred' };
+    return { error: error instanceof Error ? error.message : 'Failed to create product' };
   }
 }
 
@@ -153,7 +153,7 @@ export async function updateProduct(productId: string, formData: FormData) {
 
     if (error) {
       logger.error('Error updating product', { productId, error })
-      return { error: 'Failed to update product' }
+      return { error: error.message || 'Failed to update product' }
     }
 
     revalidatePath('/admin/products')
@@ -161,7 +161,7 @@ export async function updateProduct(productId: string, formData: FormData) {
   } catch (error) {
     if ((error as Error).message === 'NEXT_REDIRECT') throw error
     logger.error('Error in updateProduct', error)
-    return { error: 'An unexpected error occurred' }
+    return { error: error instanceof Error ? error.message : 'Failed to update product' }
   }
 }
 

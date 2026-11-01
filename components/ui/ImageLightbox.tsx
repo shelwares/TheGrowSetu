@@ -80,7 +80,7 @@ export default function ImageLightbox({
             src={src}
             alt={alt}
             onError={() => setHasError(true)}
-            className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl transition-transform"
+            className="w-full h-full object-contain"
           />
         )}
         {alt && !hasError && (

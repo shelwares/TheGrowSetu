@@ -25,7 +25,7 @@ export async function uploadProductImage(formData: FormData): Promise<{ publicUr
 
     const supabase = await getSupabaseServerClient()
 
-    // Convert file to ArrayBuffer before passing to Supabase
+    // Ensure arrayBuffer is used
     const arrayBuffer = await file.arrayBuffer()
 
     const { data, error } = await supabase.storage
@@ -42,7 +42,7 @@ export async function uploadProductImage(formData: FormData): Promise<{ publicUr
         name: error.name,
         details: error,
       })
-      return { error: error.message || 'Failed to upload image to Supabase storage' }
+      return { error: error.message || 'Failed to upload image' }
     }
 
     const { data: urlData } = supabase.storage
@@ -54,16 +54,8 @@ export async function uploadProductImage(formData: FormData): Promise<{ publicUr
     }
 
     return { publicUrl: urlData.publicUrl }
-  } catch (err: unknown) {
-    const errorMessage =
-      err instanceof Error
-        ? err.message
-        : typeof err === 'object' && err !== null && 'message' in err
-        ? String((err as { message: unknown }).message)
-        : String(err)
-
-    console.error('[STORAGE_ACTION_ERROR] Unexpected error in uploadProductImage:', err)
-    logger.error('Unexpected error in uploadProductImage', { error: err, message: errorMessage })
-    return { error: errorMessage || 'An unexpected error occurred during upload' }
+  } catch (error: unknown) {
+    console.error('[STORAGE_ACTION_ERROR] Unexpected error in uploadProductImage:', error)
+    return { error: error instanceof Error ? error.message : 'Failed to upload image' }
   }
 }

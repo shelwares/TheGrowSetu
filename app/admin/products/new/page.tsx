@@ -52,6 +52,7 @@ export default function NewProductPage() {
 
         if (uploadRes.error || !uploadRes.publicUrl) {
           const errorMsg = uploadRes.error || 'Failed to upload image'
+          console.error('[NewProductPage] Image upload failed:', errorMsg)
           setError(errorMsg)
           toast.error(errorMsg)
           setIsSubmitting(false)
@@ -73,10 +74,12 @@ export default function NewProductPage() {
 
       const result = await createProduct(formData)
       if (result?.error) {
+        console.error('[NewProductPage] Create product failed:', result.error)
         setError(result.error)
         toast.error(result.error)
       }
     } catch (err: unknown) {
+      console.error('[NewProductPage] Error during form submission:', err)
       const msg = err instanceof Error ? err.message : 'An unexpected error occurred'
       setError(msg)
       toast.error(msg)
