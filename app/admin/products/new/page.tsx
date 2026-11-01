@@ -12,7 +12,8 @@ export default function NewProductPage() {
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isUploading, setIsUploading] = useState(false)
-  const [imageUrl, setImageUrl] = useState('')
+  const [imageUrl, setImageUrl] = useState('') // Supabase public URL or pasted URL only
+  const [localPreviewUrl, setLocalPreviewUrl] = useState<string | null>(null) // Local preview for UI only
   const [name, setName] = useState('')
   const [isLightboxOpen, setIsLightboxOpen] = useState(false)
 
@@ -26,6 +27,10 @@ export default function NewProductPage() {
       return
     }
 
+    // Create a local preview URL strictly for UI display while uploading
+    const objectUrl = URL.createObjectURL(file)
+    setLocalPreviewUrl(objectUrl)
+
     setIsUploading(true)
     const formData = new FormData()
     formData.append('file', file)
@@ -34,12 +39,18 @@ export default function NewProductPage() {
       const res = await uploadProductImage(formData)
       if (res.error) {
         toast.error(res.error)
+        // On failure, revert local preview
+        setLocalPreviewUrl(null)
       } else if (res.publicUrl) {
+        // On success, set base_image state to the Supabase public URL (not the blob URL)
         setImageUrl(res.publicUrl)
+        setLocalPreviewUrl(null)
         toast.success('Image uploaded successfully')
       }
-    } catch {
-      toast.error('An unexpected error occurred during upload')
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'An unexpected error occurred during upload'
+      toast.error(msg)
+      setLocalPreviewUrl(null)
     } finally {
       setIsUploading(false)
       e.target.value = ''
@@ -57,6 +68,8 @@ export default function NewProductPage() {
       setIsSubmitting(false)
     }
   }
+
+  const activePreview = localPreviewUrl || imageUrl
 
   return (
     <div className="max-w-2xl space-y-6">
@@ -121,7 +134,7 @@ export default function NewProductPage() {
                 {isUploading && (
                   <div className="flex items-center gap-2 text-sm text-indigo-600 font-medium">
                     <Loader2 className="w-4 h-4 animate-spin" />
-                    <span>Uploading...</span>
+                    <span>Uploading to Supabase Storage...</span>
                   </div>
                 )}
               </div>
@@ -131,7 +144,10 @@ export default function NewProductPage() {
                   name="base_image"
                   type="url"
                   value={imageUrl}
-                  onChange={(e) => setImageUrl(e.target.value)}
+                  onChange={(e) => {
+                    setImageUrl(e.target.value)
+                    setLocalPreviewUrl(null)
+                  }}
                   placeholder="Or paste image URL (https://...)"
                   disabled={isSubmitting || isUploading}
                   className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm disabled:opacity-60 disabled:cursor-not-allowed"
@@ -141,12 +157,12 @@ export default function NewProductPage() {
           </div>
 
           {/* Image Preview & Lightbox trigger */}
-          {imageUrl && (
+          {activePreview && (
             <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between gap-4">
               <div className="flex items-center gap-3 min-w-0">
                 <div className="w-14 h-14 rounded-lg overflow-hidden bg-slate-200 flex-shrink-0 border border-slate-300 relative group">
                   <img
-                    src={imageUrl}
+                    src={activePreview}
                     alt={name || 'Product preview'}
                     className="w-full h-full object-cover"
                     onError={(e) => {
@@ -155,8 +171,12 @@ export default function NewProductPage() {
                   />
                 </div>
                 <div className="min-w-0">
-                  <p className="text-xs font-semibold text-slate-700">Image Preview</p>
-                  <p className="text-xs text-slate-500 truncate max-w-sm">{imageUrl}</p>
+                  <p className="text-xs font-semibold text-slate-700">
+                    {localPreviewUrl ? 'Local Preview (Uploading)' : 'Image Preview'}
+                  </p>
+                  <p className="text-xs text-slate-500 truncate max-w-sm">
+                    {isUploading ? 'Uploading file...' : (imageUrl || 'Local file selected')}
+                  </p>
                 </div>
               </div>
 
@@ -171,7 +191,10 @@ export default function NewProductPage() {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setImageUrl('')}
+                  onClick={() => {
+                    setImageUrl('')
+                    setLocalPreviewUrl(null)
+                  }}
                   className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-red-600 bg-white border border-red-200 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
                 >
                   Remove
@@ -186,7 +209,12 @@ export default function NewProductPage() {
               disabled={isSubmitting || isUploading}
               className="px-6 py-2.5 bg-indigo-600 text-white font-semibold text-sm rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2"
             >
-              {isSubmitting ? (
+              {isUploading ? (
+                <>
+                  <Loader2 className="animate-spin h-4 w-4" />
+                  Uploading Image...
+                </>
+              ) : isSubmitting ? (
                 <>
                   <svg className="animate-spin h-4 w-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
                     <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
@@ -208,7 +236,7 @@ export default function NewProductPage() {
       <ImageLightbox
         isOpen={isLightboxOpen}
         onClose={() => setIsLightboxOpen(false)}
-        src={imageUrl}
+        src={activePreview}
         alt={name || 'Product preview'}
       />
     </div>

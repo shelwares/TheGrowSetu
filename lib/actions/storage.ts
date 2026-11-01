@@ -25,28 +25,45 @@ export async function uploadProductImage(formData: FormData): Promise<{ publicUr
 
     const supabase = await getSupabaseServerClient()
 
+    // Convert file to ArrayBuffer before passing to Supabase
     const arrayBuffer = await file.arrayBuffer()
-    const buffer = Buffer.from(arrayBuffer)
 
     const { data, error } = await supabase.storage
       .from('product-images')
-      .upload(fileName, buffer, {
+      .upload(fileName, arrayBuffer, {
         contentType: file.type,
         upsert: false,
       })
 
     if (error) {
-      logger.error('Error uploading product image to Supabase storage', error)
-      return { error: error.message || 'Failed to upload image' }
+      console.error('[STORAGE_UPLOAD_ERROR] Supabase upload failed:', error)
+      logger.error('Error uploading product image to Supabase storage', {
+        message: error.message,
+        name: error.name,
+        details: error,
+      })
+      return { error: error.message || 'Failed to upload image to Supabase storage' }
     }
 
     const { data: urlData } = supabase.storage
       .from('product-images')
       .getPublicUrl(data?.path || fileName)
 
+    if (!urlData?.publicUrl) {
+      return { error: 'Failed to generate public URL for uploaded image' }
+    }
+
     return { publicUrl: urlData.publicUrl }
-  } catch (error: any) {
-    logger.error('Unexpected error in uploadProductImage', error)
-    return { error: error?.message || 'An unexpected error occurred during upload' }
+  } catch (err: unknown) {
+    const errorMessage =
+      err instanceof Error
+        ? err.message
+        : typeof err === 'object' && err !== null && 'message' in err
+        ? String((err as { message: unknown }).message)
+        : String(err)
+
+    console.error('[STORAGE_ACTION_ERROR] Unexpected error in uploadProductImage:', err)
+    logger.error('Unexpected error in uploadProductImage', { error: err, message: errorMessage })
+    return { error: errorMessage || 'An unexpected error occurred during upload' }
   }
 }
