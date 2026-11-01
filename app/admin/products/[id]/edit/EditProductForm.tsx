@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useTransition } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
@@ -20,8 +20,10 @@ interface Product {
 export default function EditProductForm({ product }: { product: Product }) {
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isUploading, setIsUploading] = useState(false)
+  const [isPending, startTransition] = useTransition()
+  const [name, setName] = useState(product.name || '')
+  const [category, setCategory] = useState(product.category || '')
+  const [description, setDescription] = useState(product.description || '')
   const [selectedFile, setSelectedFile] = useState<File | null>(null)
   const [imageUrl, setImageUrl] = useState<string>(product.base_image || '')
   const [isLightboxOpen, setIsLightboxOpen] = useState(false)
@@ -42,64 +44,65 @@ export default function EditProductForm({ product }: { product: Product }) {
     setImageUrl(URL.createObjectURL(file))
   }
 
-  async function handleSubmit(formData: FormData) {
-    if (isSubmitting || isUploading) return
-    setIsSubmitting(true)
-    setError(null)
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault()
 
-    try {
-      let finalBaseImage = imageUrl
+    startTransition(async () => {
+      setError(null)
 
-      // If a new file was selected, upload it upon form submission
-      if (selectedFile) {
-        setIsUploading(true)
-        const uploadFormData = new FormData()
-        uploadFormData.append('file', selectedFile)
+      try {
+        let finalBaseImage = imageUrl
 
-        const uploadRes = await uploadProductImage(uploadFormData)
-        setIsUploading(false)
+        // 1. Upload file if selected
+        if (selectedFile) {
+          const uploadFormData = new FormData()
+          uploadFormData.append('file', selectedFile)
 
-        if (uploadRes.error || !uploadRes.publicUrl) {
-          const errorMsg = uploadRes.error || 'Failed to upload image'
-          console.error('[EditProductForm] Image upload failed:', errorMsg)
-          setError(errorMsg)
-          toast.error(errorMsg)
-          setIsSubmitting(false)
-          return
+          const uploadRes = await uploadProductImage(uploadFormData)
+
+          if (uploadRes.error || !uploadRes.publicUrl) {
+            const errorMsg = uploadRes.error || 'Failed to upload image'
+            console.error('[EditProductForm] Image upload failed:', errorMsg)
+            setError(errorMsg)
+            toast.error(errorMsg)
+            return // Stop submission if upload fails
+          }
+
+          finalBaseImage = uploadRes.publicUrl
+          setImageUrl(uploadRes.publicUrl)
+          setSelectedFile(null)
+        } else {
+          // Ensure no blob: URLs are ever sent to the database
+          if (finalBaseImage && finalBaseImage.startsWith('blob:')) {
+            finalBaseImage = product.base_image || ''
+          }
         }
 
-        finalBaseImage = uploadRes.publicUrl
-        setImageUrl(uploadRes.publicUrl)
-        setSelectedFile(null)
-      } else {
-        // Ensure no blob: URLs are ever sent to the database
-        if (finalBaseImage && finalBaseImage.startsWith('blob:')) {
-          finalBaseImage = product.base_image || ''
+        // 2. Prepare data for update action
+        const submitData = new FormData()
+        submitData.append('name', name)
+        submitData.append('category', category)
+        submitData.append('description', description)
+        submitData.append('base_image', finalBaseImage || '')
+
+        // 3. Call update action
+        const result = await updateProduct(product.id, submitData)
+        if (result?.error) {
+          console.error('[EditProductForm] Update product failed:', result.error)
+          setError(result.error)
+          toast.error(result.error)
+        } else {
+          toast.success(`"${name || product.name}" updated successfully!`)
+          router.push('/admin/products')
+          router.refresh()
         }
+      } catch (err: unknown) {
+        console.error('[EditProductForm] Error during form submission:', err)
+        const msg = err instanceof Error ? err.message : 'An unexpected error occurred while updating the product.'
+        setError(msg)
+        toast.error(msg)
       }
-
-      // Always set the clean public URL or empty string into formData
-      formData.set('base_image', finalBaseImage || '')
-
-      const result = await updateProduct(product.id, formData)
-      if (result?.error) {
-        console.error('[EditProductForm] Update product failed:', result.error)
-        setError(result.error)
-        toast.error(result.error)
-      } else {
-        toast.success(`"${formData.get('name') || product.name}" updated successfully!`)
-        router.push('/admin/products')
-        router.refresh()
-      }
-    } catch (err: unknown) {
-      console.error('[EditProductForm] Error during form submission:', err)
-      const msg = err instanceof Error ? err.message : 'An unexpected error occurred while updating the product.'
-      setError(msg)
-      toast.error(msg)
-    } finally {
-      setIsSubmitting(false)
-      setIsUploading(false)
-    }
+    })
   }
 
   return (
@@ -110,7 +113,7 @@ export default function EditProductForm({ product }: { product: Product }) {
         </div>
       )}
 
-      <form action={handleSubmit} className="space-y-5">
+      <form onSubmit={handleSubmit} className="space-y-5">
         <div>
           <label className="block text-sm font-semibold text-slate-900 mb-1.5">
             Product Name *
@@ -119,9 +122,10 @@ export default function EditProductForm({ product }: { product: Product }) {
             name="name"
             required
             type="text"
-            defaultValue={product.name}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
             placeholder="e.g. Premium Cotton T-Shirt"
-            disabled={isSubmitting || isUploading}
+            disabled={isPending}
             className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm disabled:opacity-60 disabled:cursor-not-allowed"
           />
         </div>
@@ -133,9 +137,10 @@ export default function EditProductForm({ product }: { product: Product }) {
           <input
             name="category"
             type="text"
-            defaultValue={product.category || ''}
+            value={category}
+            onChange={(e) => setCategory(e.target.value)}
             placeholder="e.g. Apparel, Electronics, Home Goods"
-            disabled={isSubmitting || isUploading}
+            disabled={isPending}
             className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm disabled:opacity-60 disabled:cursor-not-allowed"
           />
         </div>
@@ -147,9 +152,10 @@ export default function EditProductForm({ product }: { product: Product }) {
           <textarea
             name="description"
             rows={4}
-            defaultValue={product.description || ''}
+            value={description}
+            onChange={(e) => setDescription(e.target.value)}
             placeholder="Describe the product specifications, materials, etc."
-            disabled={isSubmitting || isUploading}
+            disabled={isPending}
             className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm resize-none disabled:opacity-60 disabled:cursor-not-allowed"
           />
         </div>
@@ -164,17 +170,17 @@ export default function EditProductForm({ product }: { product: Product }) {
                 ref={fileInputRef}
                 type="file"
                 accept="image/*"
-                disabled={isSubmitting || isUploading}
+                disabled={isPending}
                 onChange={handleFileChange}
                 className="block w-full sm:w-auto text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 file:cursor-pointer disabled:opacity-60 cursor-pointer"
               />
-              {selectedFile && !isUploading && (
+              {selectedFile && !isPending && (
                 <span className="text-xs text-indigo-600 font-medium">Ready to upload on save</span>
               )}
-              {isUploading && (
+              {isPending && selectedFile && (
                 <div className="flex items-center gap-2 text-sm text-indigo-600 font-medium">
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Uploading image to Supabase Storage...</span>
+                  <span>Uploading &amp; Saving...</span>
                 </div>
               )}
             </div>
@@ -190,7 +196,7 @@ export default function EditProductForm({ product }: { product: Product }) {
                   if (fileInputRef.current) fileInputRef.current.value = ''
                 }}
                 placeholder={selectedFile ? "File selected for upload (clear or remove to paste URL)" : "Or paste image URL (https://...)"}
-                disabled={isSubmitting || isUploading}
+                disabled={isPending}
                 className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm disabled:opacity-60 disabled:cursor-not-allowed"
               />
             </div>
@@ -248,37 +254,13 @@ export default function EditProductForm({ product }: { product: Product }) {
         <div className="pt-2 flex gap-3">
           <button
             type="submit"
-            disabled={isSubmitting || isUploading}
+            disabled={isPending}
             className="px-6 py-2.5 bg-indigo-600 text-white font-semibold text-sm rounded-lg hover:bg-indigo-700 transition-colors disabled:opacity-70 disabled:cursor-not-allowed flex items-center gap-2 cursor-pointer"
           >
-            {isUploading ? (
+            {isPending ? (
               <>
                 <Loader2 className="animate-spin h-4 w-4" />
-                Uploading Image...
-              </>
-            ) : isSubmitting ? (
-              <>
-                <svg
-                  className="animate-spin h-4 w-4"
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                >
-                  <circle
-                    className="opacity-25"
-                    cx="12"
-                    cy="12"
-                    r="10"
-                    stroke="currentColor"
-                    strokeWidth="4"
-                  />
-                  <path
-                    className="opacity-75"
-                    fill="currentColor"
-                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z"
-                  />
-                </svg>
-                Saving Changes...
+                {selectedFile ? 'Uploading & Saving...' : 'Saving Changes...'}
               </>
             ) : (
               'Save Changes'
