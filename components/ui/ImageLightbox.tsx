@@ -1,7 +1,7 @@
 'use client'
 
-import { useEffect, useCallback } from 'react'
-import { X } from 'lucide-react'
+import { useEffect, useCallback, useState } from 'react'
+import { X, ImageOff } from 'lucide-react'
 
 interface ImageLightboxProps {
   src?: string | null
@@ -16,6 +16,8 @@ export default function ImageLightbox({
   isOpen,
   onClose,
 }: ImageLightboxProps) {
+  const [hasError, setHasError] = useState(false)
+
   const handleKeyDown = useCallback(
     (e: KeyboardEvent) => {
       if (e.key === 'Escape') {
@@ -28,6 +30,8 @@ export default function ImageLightbox({
   useEffect(() => {
     if (!isOpen) return
 
+    setHasError(false)
+
     // Lock body scroll while lightbox is open
     const originalOverflow = document.body.style.overflow
     document.body.style.overflow = 'hidden'
@@ -37,7 +41,7 @@ export default function ImageLightbox({
       document.body.style.overflow = originalOverflow
       window.removeEventListener('keydown', handleKeyDown)
     }
-  }, [isOpen, handleKeyDown])
+  }, [isOpen, src, handleKeyDown])
 
   if (!isOpen || !src) return null
 
@@ -64,12 +68,22 @@ export default function ImageLightbox({
         className="relative max-w-5xl max-h-[90vh] w-full h-full flex flex-col items-center justify-center p-2"
         onClick={(e) => e.stopPropagation()}
       >
-        <img
-          src={src}
-          alt={alt}
-          className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl transition-transform"
-        />
-        {alt && (
+        {hasError ? (
+          <div className="flex flex-col items-center justify-center p-8 bg-slate-900/80 rounded-xl border border-slate-700 text-center max-w-md">
+            <ImageOff className="w-12 h-12 text-slate-400 mb-3" />
+            <p className="text-sm sm:text-base font-medium text-slate-200">
+              Image could not be loaded.
+            </p>
+          </div>
+        ) : (
+          <img
+            src={src}
+            alt={alt}
+            onError={() => setHasError(true)}
+            className="max-w-full max-h-[85vh] object-contain rounded-lg shadow-2xl transition-transform"
+          />
+        )}
+        {alt && !hasError && (
           <p className="mt-3 text-xs sm:text-sm text-slate-300 font-medium text-center truncate max-w-xl">
             {alt}
           </p>
@@ -78,3 +92,4 @@ export default function ImageLightbox({
     </div>
   )
 }
+
