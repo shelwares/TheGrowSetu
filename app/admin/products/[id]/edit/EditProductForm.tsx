@@ -1,11 +1,10 @@
 'use client'
 
-import { useState, useRef, useTransition } from 'react'
+import { useState, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
 import { updateProduct } from '@/lib/actions/admin'
-import { uploadProductImage } from '@/lib/actions/storage'
 import ImageLightbox from '@/components/ui/ImageLightbox'
 import { ZoomIn, Loader2 } from 'lucide-react'
 
@@ -20,7 +19,8 @@ interface Product {
 export default function EditProductForm({ product }: { product: Product }) {
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
-  const [isPending, startTransition] = useTransition()
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const isPending = isSubmitting
   const [name, setName] = useState(product.name || '')
   const [category, setCategory] = useState(product.category || '')
   const [description, setDescription] = useState(product.description || '')
@@ -44,65 +44,71 @@ export default function EditProductForm({ product }: { product: Product }) {
     setImageUrl(URL.createObjectURL(file))
   }
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
+    setIsSubmitting(true)
+    setError(null)
 
-    startTransition(async () => {
-      setError(null)
+    try {
+      let finalBaseImage = imageUrl
 
-      try {
-        let finalBaseImage = imageUrl
+      // 1. Upload file if selected using API route (fetch)
+      if (selectedFile) {
+        const uploadFormData = new FormData()
+        uploadFormData.append('file', selectedFile)
 
-        // 1. Upload file if selected
-        if (selectedFile) {
-          const uploadFormData = new FormData()
-          uploadFormData.append('file', selectedFile)
+        const uploadRes = await fetch('/api/upload', {
+          method: 'POST',
+          body: uploadFormData,
+        })
 
-          const uploadRes = await uploadProductImage(uploadFormData)
+        const uploadData = await uploadRes.json()
 
-          if (uploadRes.error || !uploadRes.publicUrl) {
-            const errorMsg = uploadRes.error || 'Failed to upload image'
-            console.error('[EditProductForm] Image upload failed:', errorMsg)
-            setError(errorMsg)
-            toast.error(errorMsg)
-            return // Stop submission if upload fails
-          }
-
-          finalBaseImage = uploadRes.publicUrl
-          setImageUrl(uploadRes.publicUrl)
-          setSelectedFile(null)
-        } else {
-          // Ensure no blob: URLs are ever sent to the database
-          if (finalBaseImage && finalBaseImage.startsWith('blob:')) {
-            finalBaseImage = product.base_image || ''
-          }
+        if (!uploadRes.ok || !uploadData.publicUrl) {
+          const errorMsg = uploadData.error || 'Failed to upload image'
+          console.error('[EditProductForm] Image upload failed:', errorMsg)
+          setError(errorMsg)
+          toast.error(errorMsg)
+          setIsSubmitting(false)
+          return // Stop submission if upload fails
         }
 
-        // 2. Prepare data for update action
-        const submitData = new FormData()
-        submitData.append('name', name)
-        submitData.append('category', category)
-        submitData.append('description', description)
-        submitData.append('base_image', finalBaseImage || '')
-
-        // 3. Call update action
-        const result = await updateProduct(product.id, submitData)
-        if (result?.error) {
-          console.error('[EditProductForm] Update product failed:', result.error)
-          setError(result.error)
-          toast.error(result.error)
-        } else {
-          toast.success(`"${name || product.name}" updated successfully!`)
-          router.push('/admin/products')
-          router.refresh()
+        finalBaseImage = uploadData.publicUrl
+        setImageUrl(uploadData.publicUrl)
+        setSelectedFile(null)
+      } else {
+        // Ensure no blob: URLs are ever sent to the database
+        if (finalBaseImage && finalBaseImage.startsWith('blob:')) {
+          finalBaseImage = product.base_image || ''
         }
-      } catch (err: unknown) {
-        console.error('[EditProductForm] Error during form submission:', err)
-        const msg = err instanceof Error ? err.message : 'An unexpected error occurred while updating the product.'
-        setError(msg)
-        toast.error(msg)
       }
-    })
+
+      // 2. Prepare data for update action
+      const submitData = new FormData()
+      submitData.append('name', name)
+      submitData.append('category', category)
+      submitData.append('description', description)
+      submitData.append('base_image', finalBaseImage || '')
+
+      // 3. Call update action
+      const result = await updateProduct(product.id, submitData)
+      if (result?.error) {
+        console.error('[EditProductForm] Update product failed:', result.error)
+        setError(result.error)
+        toast.error(result.error)
+      } else {
+        toast.success(`"${name || product.name}" updated successfully!`)
+        router.push('/admin/products')
+        router.refresh()
+      }
+    } catch (err: unknown) {
+      console.error('[EditProductForm] Error during form submission:', err)
+      const msg = err instanceof Error ? err.message : 'An unexpected error occurred while updating the product.'
+      setError(msg)
+      toast.error(msg)
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   return (
