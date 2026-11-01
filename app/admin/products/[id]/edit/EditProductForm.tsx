@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useTransition } from 'react'
+import { useState, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
@@ -21,13 +21,13 @@ export default function EditProductForm({ product }: { product: Product }) {
   const router = useRouter()
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isPending, startTransition] = useTransition()
-  const isUploading = isPending
-  const [imageUrl, setImageUrl] = useState<string>(product.base_image || '') // Supabase public URL or pasted URL only
-  const [localPreviewUrl, setLocalPreviewUrl] = useState<string | null>(null) // Local preview for UI only
+  const [isUploading, setIsUploading] = useState(false)
+  const [selectedFile, setSelectedFile] = useState<File | null>(null)
+  const [imageUrl, setImageUrl] = useState<string>(product.base_image || '')
   const [isLightboxOpen, setIsLightboxOpen] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
-  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
@@ -37,39 +37,49 @@ export default function EditProductForm({ product }: { product: Product }) {
       return
     }
 
-    // Local preview immediately for UI
-    const objectUrl = URL.createObjectURL(file)
-    setLocalPreviewUrl(objectUrl)
-
-    const formData = new FormData()
-    formData.append('file', file)
-
-    startTransition(async () => {
-      try {
-        const res = await uploadProductImage(formData)
-        if (res.error) {
-          toast.error(res.error)
-          setLocalPreviewUrl(null)
-        } else if (res.publicUrl) {
-          setImageUrl(res.publicUrl) // Set the Supabase URL, NOT the blob URL
-          setLocalPreviewUrl(null)
-          toast.success('Image uploaded successfully')
-        }
-      } catch (err: unknown) {
-        const msg = err instanceof Error ? err.message : 'An unexpected error occurred during upload'
-        toast.error(msg)
-        setLocalPreviewUrl(null)
-      } finally {
-        e.target.value = ''
-      }
-    })
+    // Store file in state and create local preview for UI only
+    setSelectedFile(file)
+    setImageUrl(URL.createObjectURL(file))
   }
 
   async function handleSubmit(formData: FormData) {
-    if (isSubmitting || isPending) return
+    if (isSubmitting || isUploading) return
     setIsSubmitting(true)
     setError(null)
+
     try {
+      let finalBaseImage = imageUrl
+
+      // If a new file was selected, upload it upon form submission
+      if (selectedFile) {
+        setIsUploading(true)
+        const uploadFormData = new FormData()
+        uploadFormData.append('file', selectedFile)
+
+        const uploadRes = await uploadProductImage(uploadFormData)
+        setIsUploading(false)
+
+        if (uploadRes.error || !uploadRes.publicUrl) {
+          const errorMsg = uploadRes.error || 'Failed to upload image'
+          setError(errorMsg)
+          toast.error(errorMsg)
+          setIsSubmitting(false)
+          return
+        }
+
+        finalBaseImage = uploadRes.publicUrl
+        setImageUrl(uploadRes.publicUrl)
+        setSelectedFile(null)
+      } else {
+        // Ensure no blob: URLs are ever sent to the database
+        if (finalBaseImage && finalBaseImage.startsWith('blob:')) {
+          finalBaseImage = product.base_image || ''
+        }
+      }
+
+      // Always set the clean public URL or empty string into formData
+      formData.set('base_image', finalBaseImage || '')
+
       const result = await updateProduct(product.id, formData)
       if (result?.error) {
         setError(result.error)
@@ -85,10 +95,9 @@ export default function EditProductForm({ product }: { product: Product }) {
       toast.error(msg)
     } finally {
       setIsSubmitting(false)
+      setIsUploading(false)
     }
   }
-
-  const activePreview = localPreviewUrl || imageUrl
 
   return (
     <div className="bg-white rounded-2xl shadow-sm border border-slate-200 p-8">
@@ -149,16 +158,20 @@ export default function EditProductForm({ product }: { product: Product }) {
           <div className="space-y-3">
             <div className="flex flex-col sm:flex-row sm:items-center gap-3">
               <input
+                ref={fileInputRef}
                 type="file"
                 accept="image/*"
                 disabled={isSubmitting || isUploading}
-                onChange={handleFileUpload}
+                onChange={handleFileChange}
                 className="block w-full sm:w-auto text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-indigo-50 file:text-indigo-700 hover:file:bg-indigo-100 file:cursor-pointer disabled:opacity-60 cursor-pointer"
               />
+              {selectedFile && !isUploading && (
+                <span className="text-xs text-indigo-600 font-medium">Ready to upload on save</span>
+              )}
               {isUploading && (
                 <div className="flex items-center gap-2 text-sm text-indigo-600 font-medium">
                   <Loader2 className="w-4 h-4 animate-spin" />
-                  <span>Uploading to Supabase Storage...</span>
+                  <span>Uploading image to Supabase Storage...</span>
                 </div>
               )}
             </div>
@@ -167,12 +180,13 @@ export default function EditProductForm({ product }: { product: Product }) {
               <input
                 name="base_image"
                 type="url"
-                value={imageUrl}
+                value={selectedFile ? '' : imageUrl}
                 onChange={(e) => {
+                  setSelectedFile(null)
                   setImageUrl(e.target.value)
-                  setLocalPreviewUrl(null)
+                  if (fileInputRef.current) fileInputRef.current.value = ''
                 }}
-                placeholder="Or paste image URL (https://...)"
+                placeholder={selectedFile ? "File selected for upload (clear or remove to paste URL)" : "Or paste image URL (https://...)"}
                 disabled={isSubmitting || isUploading}
                 className="w-full px-4 py-2.5 border border-slate-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none text-sm disabled:opacity-60 disabled:cursor-not-allowed"
               />
@@ -181,12 +195,12 @@ export default function EditProductForm({ product }: { product: Product }) {
         </div>
 
         {/* Image Preview & Lightbox trigger */}
-        {activePreview && (
+        {imageUrl && (
           <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between gap-4">
             <div className="flex items-center gap-3 min-w-0">
               <div className="w-14 h-14 rounded-lg overflow-hidden bg-slate-200 flex-shrink-0 border border-slate-300 relative group">
                 <img
-                  src={activePreview}
+                  src={imageUrl}
                   alt={product.name}
                   className="w-full h-full object-cover"
                   onError={(e) => {
@@ -196,10 +210,10 @@ export default function EditProductForm({ product }: { product: Product }) {
               </div>
               <div className="min-w-0">
                 <p className="text-xs font-semibold text-slate-700">
-                  {localPreviewUrl ? 'Local Preview (Uploading)' : 'Image Preview'}
+                  {selectedFile ? 'Local Preview (Will upload on save)' : 'Image Preview'}
                 </p>
                 <p className="text-xs text-slate-500 truncate max-w-sm">
-                  {isUploading ? 'Uploading file...' : (imageUrl || 'Local file selected')}
+                  {selectedFile ? selectedFile.name : imageUrl}
                 </p>
               </div>
             </div>
@@ -216,8 +230,9 @@ export default function EditProductForm({ product }: { product: Product }) {
               <button
                 type="button"
                 onClick={() => {
+                  setSelectedFile(null)
                   setImageUrl('')
-                  setLocalPreviewUrl(null)
+                  if (fileInputRef.current) fileInputRef.current.value = ''
                 }}
                 className="inline-flex items-center gap-1.5 px-2.5 py-1.5 text-xs font-medium text-red-600 bg-white border border-red-200 rounded-lg hover:bg-red-50 transition-colors cursor-pointer"
               >
@@ -279,7 +294,7 @@ export default function EditProductForm({ product }: { product: Product }) {
       <ImageLightbox
         isOpen={isLightboxOpen}
         onClose={() => setIsLightboxOpen(false)}
-        src={activePreview}
+        src={imageUrl}
         alt={product.name}
       />
     </div>
