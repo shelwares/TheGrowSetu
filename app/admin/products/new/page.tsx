@@ -3,7 +3,7 @@
 import { createProduct } from '@/lib/actions/admin'
 import { uploadProductImage } from '@/lib/actions/storage'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useTransition } from 'react'
 import { toast } from 'sonner'
 import ImageLightbox from '@/components/ui/ImageLightbox'
 import { ZoomIn, Loader2 } from 'lucide-react'
@@ -11,13 +11,14 @@ import { ZoomIn, Loader2 } from 'lucide-react'
 export default function NewProductPage() {
   const [error, setError] = useState<string | null>(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
-  const [isUploading, setIsUploading] = useState(false)
+  const [isPending, startTransition] = useTransition()
+  const isUploading = isPending
   const [imageUrl, setImageUrl] = useState('') // Supabase public URL or pasted URL only
   const [localPreviewUrl, setLocalPreviewUrl] = useState<string | null>(null) // Local preview for UI only
   const [name, setName] = useState('')
   const [isLightboxOpen, setIsLightboxOpen] = useState(false)
 
-  async function handleFileUpload(e: React.ChangeEvent<HTMLInputElement>) {
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
     if (!file) return
 
@@ -27,38 +28,36 @@ export default function NewProductPage() {
       return
     }
 
-    // Create a local preview URL strictly for UI display while uploading
+    // Local preview immediately for UI
     const objectUrl = URL.createObjectURL(file)
     setLocalPreviewUrl(objectUrl)
 
-    setIsUploading(true)
     const formData = new FormData()
     formData.append('file', file)
 
-    try {
-      const res = await uploadProductImage(formData)
-      if (res.error) {
-        toast.error(res.error)
-        // On failure, revert local preview
+    startTransition(async () => {
+      try {
+        const res = await uploadProductImage(formData)
+        if (res.error) {
+          toast.error(res.error)
+          setLocalPreviewUrl(null)
+        } else if (res.publicUrl) {
+          setImageUrl(res.publicUrl) // Set the Supabase URL, NOT the blob URL
+          setLocalPreviewUrl(null)
+          toast.success('Image uploaded successfully')
+        }
+      } catch (err: unknown) {
+        const msg = err instanceof Error ? err.message : 'An unexpected error occurred during upload'
+        toast.error(msg)
         setLocalPreviewUrl(null)
-      } else if (res.publicUrl) {
-        // On success, set base_image state to the Supabase public URL (not the blob URL)
-        setImageUrl(res.publicUrl)
-        setLocalPreviewUrl(null)
-        toast.success('Image uploaded successfully')
+      } finally {
+        e.target.value = ''
       }
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : 'An unexpected error occurred during upload'
-      toast.error(msg)
-      setLocalPreviewUrl(null)
-    } finally {
-      setIsUploading(false)
-      e.target.value = ''
-    }
+    })
   }
 
   async function handleSubmit(formData: FormData) {
-    if (isSubmitting || isUploading) return
+    if (isSubmitting || isPending) return
     setIsSubmitting(true)
     setError(null)
     try {
