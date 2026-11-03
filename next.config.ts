@@ -6,12 +6,12 @@ const nextConfig: NextConfig = {
   images: {
     // Enable modern image formats — Next.js will serve WebP/AVIF automatically
     formats: ['image/avif', 'image/webp'],
-    // Allow external images (allows admins to paste product image URLs from any HTTPS source)
+    // Restrict external images to trusted domains only (prevents SSRF via wildcard hostname)
     remotePatterns: [
-      {
-        protocol: 'https',
-        hostname: '**',
-      },
+      // Supabase Storage: product images uploaded via admin
+      { protocol: 'https', hostname: '*.supabase.co' },
+      // Supabase CDN alternative domain
+      { protocol: 'https', hostname: '*.supabase.in' },
     ],
     // Reduce image sizes served to mobile devices
     deviceSizes: [390, 430, 640, 750, 828, 1080, 1200, 1920],

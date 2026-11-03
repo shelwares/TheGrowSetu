@@ -24,10 +24,27 @@ export async function requireAdmin() {
       logger.warn('Unauthorized admin access attempt', { userId: user.id });
       redirect('/')
     }
+
+    // Verify Multi-Factor Authentication (MFA/2FA)
+    const { data: mfaData, error: mfaError } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
+    if (mfaError || !mfaData || mfaData.currentLevel !== 'aal2') {
+      logger.warn('Unauthorized admin action: MFA verification required', {
+        userId: user.id,
+        currentLevel: mfaData?.currentLevel,
+        nextLevel: mfaData?.nextLevel,
+      });
+      throw new Error('MFA verification required');
+    }
+
     return user
-  } catch (error) {
-    if ((error as Error).message === 'NEXT_REDIRECT') throw error;
+  } catch (error: any) {
+    if (error?.digest?.startsWith('NEXT_REDIRECT') || (error as Error).message === 'NEXT_REDIRECT') {
+      throw error;
+    }
     logger.error('Error in requireAdmin', error);
+    if (error instanceof Error && error.message === 'MFA verification required') {
+      throw error;
+    }
     redirect('/');
   }
 }

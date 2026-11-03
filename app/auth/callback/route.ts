@@ -4,8 +4,18 @@ import { getSupabaseServerClient } from "@/lib/supabase/server";
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next");
   const type = searchParams.get("type");
+
+  // Sanitize the 'next' parameter to prevent open-redirect attacks.
+  // Must start with '/' but NOT '//' (protocol-relative) or '/\' (encoding trick).
+  let redirectNext = searchParams.get("next") ?? "/";
+  if (
+    !redirectNext.startsWith("/") ||
+    redirectNext.startsWith("//") ||
+    redirectNext.startsWith("/\\")
+  ) {
+    redirectNext = "/";
+  }
 
   if (code) {
     const supabase = await getSupabaseServerClient();
@@ -13,13 +23,13 @@ export async function GET(request: Request) {
 
     if (!error && data.user) {
       // For password recovery, always go to reset-password
-      if (type === "recovery" || next === "/auth/reset-password") {
+      if (type === "recovery" || redirectNext === "/auth/reset-password") {
         return NextResponse.redirect(`${origin}/auth/reset-password`);
       }
 
-      // If explicit next param exists, honor it
-      if (next && next !== "/") {
-        return NextResponse.redirect(`${origin}${next}`);
+      // If explicit next param exists, honor it (already sanitized above)
+      if (redirectNext && redirectNext !== "/") {
+        return NextResponse.redirect(`${origin}${redirectNext}`);
       }
 
       // Otherwise, redirect based on role

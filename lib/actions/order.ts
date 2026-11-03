@@ -118,12 +118,11 @@ export async function joinPool(poolId: string, quantity: number) {
       return { error: 'Failed to join pool. Please try again.' };
     }
     
-    await supabase
-      .from('pools')
-      .update({ current_quantity: (pool.current_quantity || 0) + validated.data.quantity })
-      .eq('id', validated.data.poolId);
-    
+    // Pool current_quantity is automatically and atomically incremented
+    // via PostgreSQL database trigger (trg_pool_orders_quantity_change).
     revalidatePath('/dashboard');
+    revalidatePath('/pools');
+    revalidatePath('/pool/' + validated.data.poolId);
     return { orderId: order?.id };
   } catch (e: any) {
     logger.error('joinPool exception', e);

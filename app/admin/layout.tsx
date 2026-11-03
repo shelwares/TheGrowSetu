@@ -4,8 +4,6 @@ import { redirect } from 'next/navigation'
 import AdminSidebar from './AdminSidebar'
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  await requireAdmin()
-
   const supabase = await getSupabaseServerClient();
   const { data: aal } = await supabase.auth.mfa.getAuthenticatorAssuranceLevel();
 
@@ -18,6 +16,8 @@ export default async function AdminLayout({ children }: { children: React.ReactN
   if (aal?.currentLevel === 'aal1' && aal?.nextLevel === 'aal1') {
     redirect('/dashboard/security?reason=setup-required');
   }
+
+  await requireAdmin();
 
   return (
     <div className="min-h-screen bg-slate-100">

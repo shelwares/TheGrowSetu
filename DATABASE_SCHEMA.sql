@@ -122,6 +122,53 @@ CREATE POLICY "Buyers can create orders" ON pool_orders FOR INSERT WITH CHECK (a
 CREATE POLICY "Only admins can view all orders" ON pool_orders FOR SELECT USING (is_admin(auth.uid()));
 CREATE POLICY "Only admins can modify all orders" ON pool_orders FOR ALL USING (is_admin(auth.uid()));
 
+-- 5.1 Auto-update pool current_quantity trigger on pool_orders
+CREATE OR REPLACE FUNCTION public.handle_pool_order_quantity_change()
+RETURNS TRIGGER AS $$
+BEGIN
+    IF (TG_OP = 'INSERT') THEN
+        IF NEW.status != 'cancelled' THEN
+            UPDATE public.pools
+            SET current_quantity = COALESCE(current_quantity, 0) + NEW.quantity
+            WHERE id = NEW.pool_id;
+        END IF;
+        RETURN NEW;
+    ELSIF (TG_OP = 'UPDATE') THEN
+        -- If order was cancelled
+        IF OLD.status != 'cancelled' AND NEW.status = 'cancelled' THEN
+            UPDATE public.pools
+            SET current_quantity = GREATEST(0, COALESCE(current_quantity, 0) - OLD.quantity)
+            WHERE id = OLD.pool_id;
+        -- If order was un-cancelled (reactivated)
+        ELSIF OLD.status = 'cancelled' AND NEW.status != 'cancelled' THEN
+            UPDATE public.pools
+            SET current_quantity = COALESCE(current_quantity, 0) + NEW.quantity
+            WHERE id = NEW.pool_id;
+        -- If quantity changed on an active order
+        ELSIF OLD.status != 'cancelled' AND NEW.status != 'cancelled' AND OLD.quantity != NEW.quantity THEN
+            UPDATE public.pools
+            SET current_quantity = GREATEST(0, COALESCE(current_quantity, 0) + (NEW.quantity - OLD.quantity))
+            WHERE id = NEW.pool_id;
+        END IF;
+        RETURN NEW;
+    ELSIF (TG_OP = 'DELETE') THEN
+        IF OLD.status != 'cancelled' THEN
+            UPDATE public.pools
+            SET current_quantity = GREATEST(0, COALESCE(current_quantity, 0) - OLD.quantity)
+            WHERE id = OLD.pool_id;
+        END IF;
+        RETURN OLD;
+    END IF;
+    RETURN NULL;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+DROP TRIGGER IF EXISTS trg_pool_orders_quantity_change ON public.pool_orders;
+CREATE TRIGGER trg_pool_orders_quantity_change
+    AFTER INSERT OR UPDATE OR DELETE ON public.pool_orders
+    FOR EACH ROW EXECUTE FUNCTION public.handle_pool_order_quantity_change();
+
+
 -- 6. qc_reports
 CREATE TABLE qc_reports (
     id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,

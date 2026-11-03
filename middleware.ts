@@ -14,13 +14,18 @@ export async function middleware(request: NextRequest) {
     [
       "default-src 'self'",
       // Allow self + GA/GTM scripts (required for next/script strategy="afterInteractive")
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com",
+      // 'unsafe-eval' removed - not needed in production builds
+      "script-src 'self' 'unsafe-inline' https://www.googletagmanager.com",
       "style-src 'self' 'unsafe-inline'",
-      "img-src 'self' data: blob: https:",
+      // Restrict image sources to self, Supabase storage, and analytics pixels
+      "img-src 'self' data: blob: https://*.supabase.co https://*.supabase.in https://www.googletagmanager.com https://www.google-analytics.com",
       "font-src 'self' data:",
       // Allow GA beacon + Supabase API calls
       "connect-src 'self' https://www.googletagmanager.com https://www.google-analytics.com https://analytics.google.com https://*.supabase.co",
       "frame-ancestors 'none'",
+      "object-src 'none'",
+      "base-uri 'self'",
+      "form-action 'self'",
     ].join('; ')
   );
   response.headers.set('X-Frame-Options', 'DENY');
@@ -45,6 +50,6 @@ export const config = {
      *     sitemap.xml, robots.txt, manifest.webmanifest,
      *     icon, apple-icon, opengraph-image
      */
-    '/((?!_next/static|_next/image|favicon\\.ico|sitemap\\.xml|robots\\.txt|manifest\\.webmanifest|icon|apple-icon|opengraph-image|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon\.ico|sitemap\.xml|robots\.txt|manifest\.webmanifest|icon|apple-icon|opengraph-image|.*\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }

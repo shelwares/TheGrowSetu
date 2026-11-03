@@ -92,12 +92,13 @@ export default async function RootLayout({
   children: React.ReactNode
 }) {
   const supabase = await getSupabaseServerClient()
-  const { data: { session } } = await supabase.auth.getSession()
+  // getUser() validates the JWT server-side (more secure than getSession which trusts the cookie)
+  const { data: { user } } = await supabase.auth.getUser()
 
   return (
     <html lang="en" className={`${jakarta.variable} ${inter.variable} ${mono.variable}`}>
       <body className="min-h-screen flex flex-col antialiased">
-        <AuthProvider initialUser={session?.user ?? null} initialSession={session}>
+        <AuthProvider initialUser={user ?? null} initialSession={null}>
           <Navbar />
           <main className="flex-grow">
             {children}

@@ -6,7 +6,8 @@ export function getSupabaseClient() {
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!,
     {
       auth: {
-        flowType: 'implicit',
+        // PKCE is more secure than implicit flow: prevents auth code interception attacks
+        flowType: 'pkce',
         detectSessionInUrl: true,
       },
     }
