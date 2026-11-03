@@ -12,7 +12,7 @@ const navItems = [
   { label: 'Security', href: '/dashboard/security', icon: '🛡️' },
 ]
 
-export default function DashboardSidebar() {
+export default function DashboardSidebar({ onClose }: { onClose?: () => void } = {}) {
   const pathname = usePathname()
   const { user, signOut } = useAuth()
 
@@ -37,6 +37,7 @@ export default function DashboardSidebar() {
             <Link
               key={item.href}
               href={item.href}
+              onClick={onClose}
               className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors ${
                 isActive
                   ? 'bg-indigo-50 text-indigo-700'
@@ -53,13 +54,17 @@ export default function DashboardSidebar() {
       <div className="p-4 border-t border-slate-200">
         <Link
           href="/pools"
+          onClick={onClose}
           className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-slate-600 hover:bg-slate-50 hover:text-slate-900 transition-colors mb-1"
         >
           <span>🛍️</span>
           Browse Pools
         </Link>
         <button
-          onClick={signOut}
+          onClick={() => {
+            onClose?.()
+            signOut()
+          }}
           className="w-full flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium text-red-600 hover:bg-red-50 transition-colors"
         >
           <span>🚪</span>

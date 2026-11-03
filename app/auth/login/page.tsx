@@ -54,8 +54,8 @@ export default function LoginPage() {
         {/* Logo */}
         <div className="text-center mb-8">
           <h1 className="text-3xl font-bold font-display tracking-tight">
-            <span className="text-brand-primary-700">Abhart</span>
-            <span className="text-brand-accent-500">brands</span>
+            <span className="text-brand-primary-700">The</span>
+            <span className="text-brand-accent-500">GrowSetu</span>
           </h1>
           <p className="mt-2 text-ink-500 text-sm">Factory Rates. Without the Factory MOQ.</p>
         </div>

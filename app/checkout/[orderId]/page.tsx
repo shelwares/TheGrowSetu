@@ -67,7 +67,7 @@ export default async function CheckoutPage({
             </div>
             <div className="space-y-1">
               <h1 className="text-xl sm:text-2xl font-bold text-ink-900 leading-tight">
-                Aap <strong className="text-emerald-800 font-bold">{productName}</strong> Pool Mein Jud Gaye Hain ✅
+                Order Submitted Successfully ✅
               </h1>
               <div className="flex items-center gap-2 pt-0.5">
                 <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-800 border border-emerald-200">
@@ -86,7 +86,7 @@ export default async function CheckoutPage({
               Hi <strong className="font-semibold text-ink-900">{buyerName}</strong>,
             </p>
             <p>
-              Aapne <strong className="font-semibold text-ink-900">{productName}</strong> pool mein <strong className="font-semibold text-ink-900">{quantity} units</strong> ke saath order submit kar diya hai.
+              Your order for <strong className="font-semibold text-ink-900">{quantity} units</strong> of <strong className="font-semibold text-ink-900">{productName}</strong> has been submitted successfully.
             </p>
           </div>
 
@@ -95,7 +95,7 @@ export default async function CheckoutPage({
             <div className="flex items-center gap-2 text-sm sm:text-base text-ink-800">
               <span className="text-base">📊</span>
               <span>
-                <strong className="font-semibold text-ink-900">Pool Status:</strong> Abhi <strong className="text-emerald-700 font-bold">{currentUnits} / {targetUnits}</strong> units ho gaye hain.
+                <strong className="font-semibold text-ink-900">Pool Status:</strong> <strong className="text-emerald-700 font-bold">{currentUnits} / {targetUnits}</strong> units committed.
               </span>
             </div>
 
@@ -123,12 +123,12 @@ export default async function CheckoutPage({
 
           {/* Submission and Payment Expectation Explanatory Note */}
           <p className="text-ink-800 text-sm sm:text-base leading-relaxed">
-            <strong className="font-semibold text-ink-900">Aapki order submit ho gayi hai.</strong> Jaise hi pool pura hota hai, hum aapki order confirm karenge aur payment ke liye aapse contact karenge.
+            <strong className="font-semibold text-ink-900">Your order has been submitted.</strong> We will contact you for payment once the pool reaches its target and order confirmation begins.
           </p>
 
           {/* Viral Founder Referral Callout */}
           <div className="p-3.5 bg-amber-50/70 border border-amber-200/80 rounded-xl text-amber-900 text-sm leading-relaxed">
-            Apne founder friends ko bhi batayein — jitni jaldi pool bharega, utni jaldi aapko product milega!
+            Share with other business owners and founders — the sooner the pool reaches its target, the faster your order will be fulfilled!
           </div>
 
           {/* Primary CTA and Team Sign-off */}
@@ -138,7 +138,7 @@ export default async function CheckoutPage({
                 variant="primary"
                 className="w-full sm:w-auto bg-emerald-600 hover:bg-emerald-700 text-white font-medium px-6 py-2.5 rounded-xl shadow-sm transition-all hover:shadow-md cursor-pointer"
               >
-                Pool Progress Dekhein
+                View Pool Progress
               </Button>
             </Link>
             <span className="text-sm font-medium text-ink-600 sm:text-right">

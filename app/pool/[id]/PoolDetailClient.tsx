@@ -7,6 +7,7 @@ import { useAuth } from '@/lib/auth/auth-context'
 import PricingSlabsTable from '@/components/PricingSlabsTable'
 import { getCurrentPrice, joinPool } from '@/lib/actions/order'
 import { isProfileComplete } from '@/lib/actions/profile'
+import { toast } from 'sonner'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card } from '@/components/ui/card'
@@ -15,6 +16,21 @@ import Image from 'next/image'
 import { motion, useReducedMotion } from 'framer-motion'
 import { Minus, Plus, Lock, Clock, ImageIcon, ZoomIn } from 'lucide-react'
 import ImageLightbox from '@/components/ui/ImageLightbox'
+
+function formatRemainingTime(deadlineStr: string | null | undefined): string {
+  if (!deadlineStr) return 'Ongoing'
+  const deadline = new Date(deadlineStr)
+  if (isNaN(deadline.getTime())) return 'Ongoing'
+  const now = new Date()
+  const diffMs = deadline.getTime() - now.getTime()
+  if (diffMs <= 0) return 'Pool Closed'
+  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+  const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
+  if (days > 1) return `Pool Closes in ${days} Days`
+  if (days === 1) return 'Pool Closes in 1 Day'
+  if (hours > 0) return `Pool Closes in ${hours} Hours`
+  return 'Pool Closing Soon'
+}
 
 export default function PoolDetailClient({ pool }: { pool: any }) {
   const [quantity, setQuantity] = useState<number>(pool.pool_tiers?.[0]?.min_qty || 1)
@@ -72,7 +88,7 @@ export default function PoolDetailClient({ pool }: { pool: any }) {
     // Check if profile is complete
     const complete = await isProfileComplete();
     if (!complete) {
-      alert('Please complete your profile (name, phone, address) before joining a pool.');
+      toast.error('Please complete your profile (name, phone, address) before joining a pool.');
       router.push(`/dashboard/profile?required=1&next=/pool/${pool.id}`);
       setIsJoining(false);
       return;
@@ -82,7 +98,7 @@ export default function PoolDetailClient({ pool }: { pool: any }) {
     
     if (result.error) {
       console.log('CLIENT: joinPool returned error:', result.error);
-      alert('Error joining pool: ' + result.error);
+      toast.error(result.error || 'Failed to join pool');
       setIsJoining(false)
     } else if (result.orderId) {
       router.replace(`/checkout/${result.orderId}`)
@@ -148,7 +164,7 @@ export default function PoolDetailClient({ pool }: { pool: any }) {
                 </Badge>
                 <span className="text-sm font-medium text-warning flex items-center gap-1.5">
                   <Clock className="w-4 h-4" />
-                  Pool Closes in 5 Days
+                  {formatRemainingTime(pool.deadline)}
                 </span>
               </div>
 

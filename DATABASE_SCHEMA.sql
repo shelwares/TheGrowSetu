@@ -214,3 +214,30 @@ FOR SELECT TO authenticated USING (auth.uid() = buyer_id);
 CREATE POLICY "Admins can view all requests" ON public.product_requests 
 FOR ALL TO authenticated USING (public.is_admin(auth.uid()));
 
+
+-- 8. CONTACT MESSAGES (For contact form inquiries)
+CREATE TABLE IF NOT EXISTS public.contact_messages (
+    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+    name TEXT NOT NULL,
+    email TEXT NOT NULL,
+    message TEXT NOT NULL,
+    status TEXT DEFAULT 'unread',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
+);
+
+ALTER TABLE public.contact_messages ENABLE ROW LEVEL SECURITY;
+
+-- Allow anonymous or authenticated users to insert contact inquiries
+CREATE POLICY "Allow public insert to contact_messages"
+    ON public.contact_messages FOR INSERT
+    WITH CHECK (true);
+
+-- Allow admins to view contact messages
+CREATE POLICY "Admins can view contact_messages"
+    ON public.contact_messages FOR SELECT
+    USING (
+        EXISTS (
+            SELECT 1 FROM profiles
+            WHERE profiles.id = auth.uid() AND profiles.role = 'admin'
+        )
+    );
