@@ -15,7 +15,7 @@ export default function TermsPage() {
       <div className="prose prose-ink max-w-none space-y-6 text-ink-700">
         <section>
           <h2 className="text-2xl font-bold text-ink-900 mt-8 mb-3">1. Acceptance of Terms</h2>
-          <p>By accessing and using TheGrowSetu ("the Platform"), you accept and agree to be bound by these Terms &amp; Conditions. If you do not agree, please do not use the Platform.</p>
+          <p>By accessing and using TheGrowSetu (&quot;the Platform&quot;), you accept and agree to be bound by these Terms &amp; Conditions. If you do not agree, please do not use the Platform.</p>
         </section>
 
         <section>
@@ -38,7 +38,7 @@ export default function TermsPage() {
           <ul className="list-disc pl-6 space-y-2">
             <li>Buyers join product pools by committing to a quantity.</li>
             <li>Product prices decrease as total pool quantity increases (dynamic pricing).</li>
-            <li>Delivery fees are calculated based on each buyer's individual quantity.</li>
+            <li>Delivery fees are calculated based on each buyer&apos;s individual quantity.</li>
             <li>Once a pool closes and is confirmed, orders cannot be cancelled.</li>
             <li>If a pool fails to reach its minimum target, all committed amounts are refunded.</li>
           </ul>

@@ -1,5 +1,6 @@
 'use client'
 
+import { logger } from '@/lib/logger'
 import { useState, useRef } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
@@ -66,7 +67,7 @@ export default function EditProductForm({ product }: { product: Product }) {
 
         if (!uploadRes.ok || !uploadData.publicUrl) {
           const errorMsg = uploadData.error || 'Failed to upload image'
-          console.error('[EditProductForm] Image upload failed:', errorMsg)
+          logger.error('EditProductForm Image upload failed', errorMsg)
           setError(errorMsg)
           toast.error(errorMsg)
           setIsSubmitting(false)
@@ -93,7 +94,7 @@ export default function EditProductForm({ product }: { product: Product }) {
       // 3. Call update action
       const result = await updateProduct(product.id, submitData)
       if (result?.error) {
-        console.error('[EditProductForm] Update product failed:', result.error)
+        logger.error('EditProductForm Update product failed', result.error)
         setError(result.error)
         toast.error(result.error)
       } else {
@@ -102,7 +103,7 @@ export default function EditProductForm({ product }: { product: Product }) {
         router.refresh()
       }
     } catch (err: unknown) {
-      console.error('[EditProductForm] Error during form submission:', err)
+      logger.error('EditProductForm Error during form submission', err)
       const msg = err instanceof Error ? err.message : 'An unexpected error occurred while updating the product.'
       setError(msg)
       toast.error(msg)
@@ -214,6 +215,7 @@ export default function EditProductForm({ product }: { product: Product }) {
           <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between gap-4">
             <div className="flex items-center gap-3 min-w-0">
               <div className="w-14 h-14 rounded-lg overflow-hidden bg-slate-200 flex-shrink-0 border border-slate-300 relative group">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img
                   src={imageUrl}
                   alt={product.name}

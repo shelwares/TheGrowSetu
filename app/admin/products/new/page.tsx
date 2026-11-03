@@ -1,5 +1,6 @@
 'use client'
 
+import { logger } from '@/lib/logger'
 import { createProduct } from '@/lib/actions/admin'
 import Link from 'next/link'
 import { useState, useRef } from 'react'
@@ -56,7 +57,7 @@ export default function NewProductPage() {
 
         if (!uploadRes.ok || !uploadData.publicUrl) {
           const errorMsg = uploadData.error || 'Failed to upload image'
-          console.error('[NewProductPage] Image upload failed:', errorMsg)
+          logger.error('NewProductPage Image upload failed', errorMsg)
           setError(errorMsg)
           toast.error(errorMsg)
           setIsSubmitting(false)
@@ -83,12 +84,12 @@ export default function NewProductPage() {
       // 3. Call create action
       const result = await createProduct(submitData)
       if (result?.error) {
-        console.error('[NewProductPage] Create product failed:', result.error)
+        logger.error('NewProductPage Create product failed', result.error)
         setError(result.error)
         toast.error(result.error)
       }
     } catch (err: unknown) {
-      console.error('[NewProductPage] Error during form submission:', err)
+      logger.error('NewProductPage Error during form submission', err)
       const msg = err instanceof Error ? err.message : 'An unexpected error occurred'
       setError(msg)
       toast.error(msg)
@@ -196,7 +197,8 @@ export default function NewProductPage() {
             <div className="p-4 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between gap-4">
               <div className="flex items-center gap-3 min-w-0">
                 <div className="w-14 h-14 rounded-lg overflow-hidden bg-slate-200 flex-shrink-0 border border-slate-300 relative group">
-                  <img
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
                     src={imageUrl}
                     alt={name || 'Product preview'}
                     className="w-full h-full object-cover"

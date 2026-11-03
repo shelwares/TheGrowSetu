@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { getAdminProducts } from '@/lib/actions/admin'
 import Link from 'next/link'
 import ProductListClient from './ProductListClient'

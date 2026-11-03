@@ -57,7 +57,7 @@ export default function RefundPage() {
             <li>Change of mind after delivery</li>
             <li>Products that have been used or damaged by buyer</li>
             <li>Orders where unboxing video is not provided for quality claims</li>
-            <li>Custom orders with buyer's own branding/logo</li>
+            <li>Custom orders with buyer&apos;s own branding/logo</li>
           </ul>
         </section>
 

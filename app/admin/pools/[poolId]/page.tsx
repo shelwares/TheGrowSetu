@@ -83,7 +83,7 @@ export default async function AdminPoolDetailPage({
             </tr>
           </thead>
           <tbody className="divide-y divide-slate-100">
-            {(pool.pool_tiers || []).map((tier: any) => (
+            {(pool.pool_tiers || []).map((tier: { id: string; min_qty: number; buyer_price: number; logistics_fee?: number }) => (
               <tr key={tier.id}>
                 <td className="px-6 py-3 font-semibold text-slate-900">{tier.min_qty}+</td>
                 <td className="px-6 py-3 text-slate-700">₹{tier.buyer_price}</td>

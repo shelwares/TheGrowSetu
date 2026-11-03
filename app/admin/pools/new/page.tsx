@@ -10,7 +10,7 @@ export default function NewPoolPage({
   searchParams: Promise<{ product_id?: string }>;
 }) {
   const resolvedSearchParams = use(searchParams);
-  const [products, setProducts] = useState<any[]>([]);
+  const [products, setProducts] = useState<Array<{ id: string; name: string }>>([]);
   const [tiers, setTiers] = useState([{ min_qty: 0, max_qty: 100, buyer_price: 0, logistics_fee: 0 }]);
 
   useEffect(() => {
@@ -36,7 +36,7 @@ export default function NewPoolPage({
     setTiers(newTiers);
   };
 
-  const updateTier = (index: number, field: string, value: any) => {
+  const updateTier = (index: number, field: string, value: number | string) => {
     const newTiers = [...tiers];
     newTiers[index] = { ...newTiers[index], [field]: value };
     setTiers(newTiers);

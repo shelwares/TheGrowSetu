@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Image from "next/image";
 import { useSearchParams } from "next/navigation";
 import { getSupabaseClient } from "@/lib/supabase/client";
@@ -31,16 +31,17 @@ export default function SecurityPage() {
   const [verifying, setVerifying] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  useEffect(() => {
-    loadFactors();
-  }, []);
-
-  const loadFactors = async () => {
+  const loadFactors = useCallback(async () => {
     const supabase = getSupabaseClient();
     const { data } = await supabase.auth.mfa.listFactors();
     setFactors((data?.totp || []) as Factor[]);
     setLoading(false);
-  };
+  }, []);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
+    loadFactors();
+  }, [loadFactors]);
 
   const enrollMFA = async () => {
     setEnrolling(true);

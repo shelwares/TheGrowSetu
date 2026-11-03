@@ -106,3 +106,55 @@ export async function isProfileComplete(): Promise<boolean> {
     return false;
   }
 }
+
+export async function deleteAccount() {
+  try {
+    const supabase = await getSupabaseServerClient();
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return { error: 'Not authenticated' };
+
+    logger.info('Account deletion requested under DPDP compliance', { userId: user.id });
+
+    // Clean up user-associated records if applicable
+    await supabase.from('product_requests').delete().eq('buyer_id', user.id);
+    await supabase.from('pool_orders').delete().eq('buyer_id', user.id);
+
+    // Delete user profile
+    const { error: profileError } = await supabase
+      .from('profiles')
+      .delete()
+      .eq('id', user.id);
+
+    if (profileError) {
+      logger.error('Failed to delete profile record', profileError, { userId: user.id });
+      return { error: 'Failed to delete profile data. Please contact support@thegrowsetu.com.' };
+    }
+
+    // Delete auth user if service role key is available
+    if (process.env.SUPABASE_SERVICE_ROLE_KEY) {
+      try {
+        const { createClient } = await import('@supabase/supabase-js');
+        const adminClient = createClient(
+          process.env.NEXT_PUBLIC_SUPABASE_URL!,
+          process.env.SUPABASE_SERVICE_ROLE_KEY,
+          { auth: { autoRefreshToken: false, persistSession: false } }
+        );
+        const { error: authError } = await adminClient.auth.admin.deleteUser(user.id);
+        if (authError) {
+          logger.warn('Admin auth deletion note', { error: authError.message });
+        }
+      } catch (err) {
+        logger.warn('Admin client error during account deletion', { error: String(err) });
+      }
+    }
+
+    // Sign out session
+    await supabase.auth.signOut();
+
+    revalidatePath('/');
+    return { success: true };
+  } catch (error) {
+    logger.error('Unexpected error in deleteAccount', error);
+    return { error: 'Failed to complete account deletion' };
+  }
+}

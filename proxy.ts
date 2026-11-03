@@ -1,12 +1,9 @@
-// TODO: Pending migration from middleware.ts to proxy.ts (Next.js 16.3).
-// Do not rename yet until full verification.
-// Reference: https://nextjs.org/docs/messages/middleware-to-proxy
 import { type NextRequest, NextResponse } from 'next/server'
 import { updateSession } from '@/lib/supabase/middleware'
 
-export async function middleware(request: NextRequest) {
+export async function proxy(request: NextRequest) {
   // Update Supabase session
-  const response = await updateSession(request) || NextResponse.next();
+  const response = (await updateSession(request)) || NextResponse.next();
 
   // Add Security Headers
   response.headers.set(
@@ -37,7 +34,7 @@ export async function middleware(request: NextRequest) {
   return response;
 }
 
-export default middleware;
+export default proxy;
 
 export const config = {
   matcher: [
@@ -50,6 +47,6 @@ export const config = {
      *     sitemap.xml, robots.txt, manifest.webmanifest,
      *     icon, apple-icon, opengraph-image
      */
-    '/((?!_next/static|_next/image|favicon\.ico|sitemap\.xml|robots\.txt|manifest\.webmanifest|icon|apple-icon|opengraph-image|.*\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
+    '/((?!_next/static|_next/image|favicon\\.ico|sitemap\\.xml|robots\\.txt|manifest\\.webmanifest|icon|apple-icon|opengraph-image|.*\\.(?:svg|png|jpg|jpeg|gif|webp)$).*)',
   ],
 }

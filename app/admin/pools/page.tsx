@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 // Server Component — data fetched on the server, no useEffect waterfall on mobile
 import { getAdminPools } from "@/lib/actions/admin";
 import Link from "next/link";

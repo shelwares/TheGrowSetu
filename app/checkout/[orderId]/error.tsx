@@ -1,5 +1,6 @@
-"use client";
+'use client'
 
+import { logger } from '@/lib/logger'
 import Link from "next/link";
 import { useEffect } from "react";
 
@@ -11,7 +12,7 @@ export default function CheckoutError({
   reset: () => void;
 }) {
   useEffect(() => {
-    console.error("Checkout error:", error);
+    logger.error("Checkout error", error);
   }, [error]);
 
   return (

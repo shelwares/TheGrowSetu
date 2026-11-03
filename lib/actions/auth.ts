@@ -6,7 +6,6 @@ import { getSupabaseServerClient } from '../supabase/server'
 import { LoginSchema, SignupSchema, ResetPasswordSchema } from '../validations'
 import { logger } from '../logger'
 import { loginLimiter, signupLimiter, resetLimiter, getClientIp } from '@/lib/rate-limit';
-import { headers } from 'next/headers'
 
 export async function login(formData: FormData) {
   try {
@@ -49,9 +48,9 @@ export async function login(formData: FormData) {
     } else {
       redirect('/dashboard')
     }
-  } catch (error: any) {
+  } catch (error: unknown) {
     // redirect() throws a special error — must rethrow so Next.js handles it
-    if (error?.digest?.startsWith('NEXT_REDIRECT')) throw error;
+    if (typeof error === 'object' && error !== null && 'digest' in error && typeof (error as { digest: unknown }).digest === 'string' && (error as { digest: string }).digest.startsWith('NEXT_REDIRECT')) throw error;
     logger.error('Login action error', error);
     return redirect(`/auth/login?message=An unexpected error occurred`)
   }
@@ -98,8 +97,8 @@ export async function signup(formData: FormData) {
       // NOTE: logger.error signature is (message, error?, meta?) — pass message string as error param
       // so it is not String()-ified to "[object Object]"
       logger.error('Signup Supabase error', error.message, {
-        errorStatus: (error as any).status,
-        errorCode: (error as any).code,
+        errorStatus: typeof error === 'object' && error !== null && 'status' in error ? String((error as { status: unknown }).status) : undefined,
+        errorCode: typeof error === 'object' && error !== null && 'code' in error ? String((error as { code: unknown }).code) : undefined,
         email: validated.data.email,
         ip,
       });
@@ -128,7 +127,7 @@ export async function signup(formData: FormData) {
     logger.info('Signup success', { email: validated.data.email, ip });
     // Success — user must check email to confirm
     return { success: 'Account created! Please check your email to confirm before signing in.' };
-  } catch (e: any) {
+  } catch (e: unknown) {
     // FIXED: Pass the raw exception `e` as the second arg, not a wrapper object.
     // Previously `{ error: e.message }` was passed, which String()-ified to "[object Object]".
     logger.error('Signup exception', e instanceof Error ? e : new Error(String(e)), { ip: 'unknown' });

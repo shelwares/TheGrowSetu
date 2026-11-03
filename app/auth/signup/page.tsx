@@ -1,5 +1,6 @@
-"use client";
+'use client'
 
+import { logger } from '@/lib/logger'
 import Link from 'next/link'
 import { signup } from '@/lib/actions/auth'
 import { getSupabaseClient } from '@/lib/supabase/client'
@@ -19,7 +20,7 @@ export default function SignupPage() {
       },
     });
     if (error) {
-      console.error("Google signup error:", error.message);
+      logger.error("Google signup error", error.message);
       setLoading(false);
     }
   };

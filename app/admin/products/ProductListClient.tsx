@@ -62,8 +62,8 @@ export default function ProductListClient({ products }: ProductListClientProps) 
                         className="relative w-10 h-10 rounded-lg overflow-hidden border border-slate-200 flex-shrink-0 group hover:ring-2 hover:ring-indigo-500 transition-all cursor-pointer"
                         title="Click to zoom image"
                       >
-                        <img
-                          src={p.base_image}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={p.base_image}
                           alt={p.name}
                           className="w-full h-full object-cover"
                           onError={(e) => {

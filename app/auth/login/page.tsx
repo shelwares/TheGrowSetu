@@ -1,5 +1,6 @@
-"use client";
+'use client'
 
+import { logger } from '@/lib/logger'
 import Link from "next/link";
 import { login } from "@/lib/actions/auth";
 import { getSupabaseClient } from "@/lib/supabase/client";
@@ -8,14 +9,14 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function LoginPage() {
-  const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState<string | null>(null);
   const router = useRouter();
-
-  useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    setMessage(params.get("message"));
-  }, []);
+  const [loading, setLoading] = useState(false);
+  const [message] = useState<string | null>(() => {
+    if (typeof window !== 'undefined') {
+      return new URLSearchParams(window.location.search).get("message");
+    }
+    return null;
+  });
 
   useEffect(() => {
     const checkSession = async () => {
@@ -43,7 +44,7 @@ export default function LoginPage() {
       },
     });
     if (error) {
-      console.error("Google login error:", error.message);
+      logger.error("Google login error", error.message);
       setLoading(false);
     }
   };

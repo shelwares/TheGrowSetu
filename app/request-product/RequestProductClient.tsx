@@ -1,5 +1,6 @@
 'use client'
 
+import { logger } from '@/lib/logger'
 import { useState } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
@@ -112,7 +113,7 @@ export default function RequestProductClient({
       setAdditionalDetails('')
       router.refresh()
     } catch (err) {
-      console.error(err)
+      logger.error('Request product submission error', err)
       toast.error('Failed to submit request. Please try again.')
     } finally {
       setIsSubmitting(false)

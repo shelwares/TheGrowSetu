@@ -1,13 +1,13 @@
 export const logger = {
-  info: (message: string, meta?: any) => {
+  info: (message: string, meta?: Record<string, unknown>) => {
     console.log(JSON.stringify({ level: 'info', message, timestamp: new Date().toISOString(), ...meta }));
   },
-  warn: (message: string, meta?: any) => {
+  warn: (message: string, meta?: Record<string, unknown>) => {
     console.warn(JSON.stringify({ level: 'warn', message, timestamp: new Date().toISOString(), ...meta }));
   },
-  error: (message: string, error?: any, meta?: any) => {
+  error: (message: string, error?: unknown, meta?: Record<string, unknown>) => {
     // Scrub sensitive data if needed before logging
-    const sanitizedError = error instanceof Error ? error.message : String(error);
+    const sanitizedError = error instanceof Error ? error.message : String(error ?? '');
     console.error(JSON.stringify({ level: 'error', message, error: sanitizedError, timestamp: new Date().toISOString(), ...meta }));
   }
 };

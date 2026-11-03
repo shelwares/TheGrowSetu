@@ -15,7 +15,7 @@ export default function PrivacyPage() {
       <div className="prose prose-ink max-w-none space-y-6 text-ink-700">
         <section>
           <h2 className="text-2xl font-bold text-ink-900 mt-8 mb-3">1. Introduction</h2>
-          <p>TheGrowSetu ("we", "us", "our") is committed to protecting your privacy. This policy explains how we collect, use, and safeguard your personal information.</p>
+          <p>TheGrowSetu (&quot;we&quot;, &quot;us&quot;, &quot;our&quot;) is committed to protecting your privacy. This policy explains how we collect, use, and safeguard your personal information.</p>
         </section>
 
         <section>
@@ -98,7 +98,7 @@ export default function PrivacyPage() {
         </section>
 
         <section>
-          <h2 className="text-2xl font-bold text-ink-900 mt-8 mb-3">10. Children's Privacy</h2>
+          <h2 className="text-2xl font-bold text-ink-900 mt-8 mb-3">10. Children&apos;s Privacy</h2>
           <p>Our Platform is not intended for users under 18. We do not knowingly collect data from minors.</p>
         </section>
 

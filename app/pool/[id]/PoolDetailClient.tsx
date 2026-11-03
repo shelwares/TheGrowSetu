@@ -1,5 +1,7 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 'use client'
+
+import { logger } from '@/lib/logger'
+/* eslint-disable @typescript-eslint/no-explicit-any */
 
 import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
@@ -97,7 +99,7 @@ export default function PoolDetailClient({ pool }: { pool: any }) {
     const result = await joinPool(pool.id, quantity)
     
     if (result.error) {
-      console.log('CLIENT: joinPool returned error:', result.error);
+      logger.warn('CLIENT: joinPool returned error', { error: result.error });
       toast.error(result.error || 'Failed to join pool');
       setIsJoining(false)
     } else if (result.orderId) {

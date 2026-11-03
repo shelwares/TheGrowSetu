@@ -1,6 +1,7 @@
 'use client'
 
 import * as React from "react"
+import { Slot } from "@radix-ui/react-slot"
 import { cn } from "@/lib/utils"
 import { motion, HTMLMotionProps } from "framer-motion"
 
@@ -33,11 +34,23 @@ const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
       icon: "h-10 w-10",
     }
 
-    const baseClasses = "inline-flex items-center justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50"
+    const baseClasses = "inline-flex items-center justify-center whitespace-nowrap font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary-500 focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50 cursor-pointer"
+
+    const combinedClassName = cn(baseClasses, variants[variant], sizes[size], className)
+
+    if (asChild) {
+      return (
+        <Slot
+          className={combinedClassName}
+          ref={ref as React.Ref<HTMLElement>}
+          {...(props as React.HTMLAttributes<HTMLElement>)}
+        />
+      )
+    }
 
     return (
       <MotionButton
-        className={cn(baseClasses, variants[variant], sizes[size], className)}
+        className={combinedClassName}
         ref={ref}
         whileHover={{ scale: 1.02 }}
         whileTap={{ scale: 0.98 }}

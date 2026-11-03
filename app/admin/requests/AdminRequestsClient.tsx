@@ -1,5 +1,6 @@
 'use client'
 
+import { logger } from '@/lib/logger'
 import { useState, useMemo } from 'react'
 import { useRouter } from 'next/navigation'
 import { toast } from 'sonner'
@@ -190,7 +191,7 @@ export default function AdminRequestsClient({ initialRequests }: AdminRequestsCl
       )
       setTimeout(() => setCopied(false), 2500)
     } catch (err) {
-      console.error('Failed to copy table data:', err)
+      logger.error('Failed to copy table data', err)
       toast.error('Could not copy data to clipboard.')
     }
   }
@@ -215,7 +216,7 @@ export default function AdminRequestsClient({ initialRequests }: AdminRequestsCl
       toast.success('Request status updated.')
       router.refresh()
     } catch (err) {
-      console.error(err)
+      logger.error('AdminRequestsClient error', err)
       toast.error('Failed to update status.')
     } finally {
       setUpdatingId(null)

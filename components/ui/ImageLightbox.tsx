@@ -30,6 +30,7 @@ export default function ImageLightbox({
   useEffect(() => {
     if (!isOpen) return
 
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setHasError(false)
 
     // Lock body scroll while lightbox is open
@@ -76,6 +77,7 @@ export default function ImageLightbox({
             </p>
           </div>
         ) : (
+          // eslint-disable-next-line @next/next/no-img-element
           <img
             src={src}
             alt={alt}

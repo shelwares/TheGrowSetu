@@ -1,5 +1,7 @@
+'use client'
+
+import { logger } from '@/lib/logger'
 /* eslint-disable @typescript-eslint/no-explicit-any */
-"use client"
 
 import { updateOrderStatus } from "@/lib/actions/admin";
 import { useRouter } from "next/navigation";
@@ -31,7 +33,7 @@ function CopyButton({ text, label }: { text: string; label?: string }) {
       setCopied(true);
       setTimeout(() => setCopied(false), 1500);
     } catch (err) {
-      console.error('Copy failed:', err);
+      logger.error('Copy failed', err);
     }
   };
 

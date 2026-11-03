@@ -1,5 +1,6 @@
 import { getProfile } from '@/lib/actions/profile'
 import ProfileForm from '../ProfileForm'
+import DeleteAccountSection from './DeleteAccountSection'
 
 export default async function ProfilePage({
   searchParams,
@@ -53,6 +54,8 @@ export default async function ProfilePage({
       </div>
 
       {profile && <ProfileForm profile={profile} redirectTo={nextUrl} />}
+
+      <DeleteAccountSection />
     </div>
   );
 }

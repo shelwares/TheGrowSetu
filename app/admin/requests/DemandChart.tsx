@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useSyncExternalStore } from 'react'
 import {
   BarChart,
   Bar,
@@ -33,12 +33,10 @@ const BAR_COLORS = [
   '#f59e0b', // amber-500
 ]
 
-export default function DemandChart({ data }: DemandChartProps) {
-  const [isMounted, setIsMounted] = useState(false)
+const emptySubscribe = () => () => {}
 
-  useEffect(() => {
-    setIsMounted(true)
-  }, [])
+export default function DemandChart({ data }: DemandChartProps) {
+  const isMounted = useSyncExternalStore(emptySubscribe, () => true, () => false)
 
   if (!isMounted) {
     return (
