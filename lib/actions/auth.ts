@@ -71,11 +71,27 @@ export async function signup(formData: FormData) {
     const company_name = (formData.get('company_name') as string || '').trim();
     const address = (formData.get('address') as string || '').trim();
 
-    const validated = SignupSchema.safeParse({ email, password, full_name, phone, company_name });
+    const validated = SignupSchema.safeParse({
+      email,
+      password,
+      full_name,
+      phone,
+      company_name: company_name || undefined,
+    });
     if (!validated.success) {
+      const fieldErrors: Record<string, string> = {};
+      for (const issue of validated.error.issues) {
+        const fieldName = String(issue.path[0] || 'general');
+        if (!fieldErrors[fieldName]) {
+          fieldErrors[fieldName] = issue.message;
+        }
+      }
       const firstIssue = validated.error.issues[0];
       logger.warn('Signup validation failed', { ip, field: firstIssue.path.join('.'), message: firstIssue.message });
-      return { error: firstIssue.message };
+      return {
+        error: firstIssue.message || 'Please correct the errors below.',
+        fieldErrors,
+      };
     }
 
     const supabase = await getSupabaseServerClient();
@@ -153,10 +169,11 @@ export async function resetPassword(formData: FormData) {
 
     const supabase = await getSupabaseServerClient();
 
+    const appUrl = process.env.NEXT_PUBLIC_APP_URL || 'https://thegrowsetu.com';
     const { error } = await supabase.auth.resetPasswordForEmail(
       validated.data.email,
       {
-        redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/reset-password`,
+        redirectTo: `${appUrl}/auth/callback?next=/auth/reset-password&type=recovery`,
       }
     );
 

@@ -7,7 +7,6 @@ export async function GET(request: Request) {
   const type = searchParams.get("type");
 
   // Sanitize the 'next' parameter to prevent open-redirect attacks.
-  // Must start with '/' but NOT '//' (protocol-relative) or '/\' (encoding trick).
   let redirectNext = searchParams.get("next") ?? "/";
   if (
     !redirectNext.startsWith("/") ||
@@ -22,7 +21,7 @@ export async function GET(request: Request) {
     const { data, error } = await supabase.auth.exchangeCodeForSession(code);
 
     if (!error && data.user) {
-      // For password recovery, always go to reset-password
+      // For password recovery, always go directly to reset-password
       if (type === "recovery" || redirectNext === "/auth/reset-password") {
         return NextResponse.redirect(`${origin}/auth/reset-password`);
       }
@@ -41,7 +40,18 @@ export async function GET(request: Request) {
 
       const redirectTo = profile?.role === 'admin' ? '/admin' : '/dashboard';
       return NextResponse.redirect(`${origin}${redirectTo}`);
+    } else if (error) {
+      // If recovery code exchange fails or expired, redirect to reset-password with expired status
+      if (type === "recovery" || redirectNext === "/auth/reset-password") {
+        return NextResponse.redirect(`${origin}/auth/reset-password?error=expired`);
+      }
     }
+  }
+
+  // Handle explicit error parameter forwarded by Supabase
+  const authError = searchParams.get("error");
+  if (authError && (type === "recovery" || redirectNext === "/auth/reset-password")) {
+    return NextResponse.redirect(`${origin}/auth/reset-password?error=expired`);
   }
 
   return NextResponse.redirect(
