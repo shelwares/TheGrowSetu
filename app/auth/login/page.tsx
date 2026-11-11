@@ -173,8 +173,8 @@ export default function LoginPage() {
           <div className="flex items-start gap-3 p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm">
             <ShieldCheck className="w-5 h-5 text-brand-accent-400 shrink-0 mt-0.5" />
             <div>
-              <div className="font-semibold text-white text-sm">100% Escrow Protection</div>
-              <div className="text-xs text-brand-primary-200 mt-0.5">Funds are held securely in escrow until products pass quality inspection.</div>
+              <div className="font-semibold text-white text-sm">Pay When Pool Fills</div>
+              <div className="text-xs text-brand-primary-200 mt-0.5">No advance payment required to join. Payment collected only after demand is confirmed.</div>
             </div>
           </div>
           <div className="flex items-start gap-3 p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm">

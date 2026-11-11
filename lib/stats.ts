@@ -1,5 +1,4 @@
 import { createClient } from '@supabase/supabase-js'
-import { logger } from './logger'
 
 export interface PlatformStats {
   activePoolsCount: number
@@ -10,20 +9,22 @@ export interface PlatformStats {
 
 /**
  * Fetches real, DB-driven statistics for the platform.
- * Uses anon key with fallback-safe error handling.
+ * Fully hardened against network, RLS, timeout, and numeric anomalies.
  */
 export async function getPlatformStats(): Promise<PlatformStats> {
+  const fallbackStats: PlatformStats = {
+    activePoolsCount: 0,
+    verifiedSuppliersCount: 0,
+    totalCategoriesCount: 0,
+    avgSavingsPercent: 0,
+  }
+
   try {
     const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
     const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
     if (!supabaseUrl || !supabaseAnonKey) {
-      return {
-        activePoolsCount: 0,
-        verifiedSuppliersCount: 0,
-        totalCategoriesCount: 0,
-        avgSavingsPercent: 0,
-      }
+      return fallbackStats
     }
 
     const supabase = createClient(supabaseUrl, supabaseAnonKey)
@@ -45,13 +46,8 @@ export async function getPlatformStats(): Promise<PlatformStats> {
       .eq('status', 'active')
 
     if (poolsError) {
-      logger.error('Error fetching pools for stats:', poolsError)
-      return {
-        activePoolsCount: 0,
-        verifiedSuppliersCount: 0,
-        totalCategoriesCount: 0,
-        avgSavingsPercent: 0,
-      }
+      console.error('Error fetching pools for stats:', poolsError)
+      return fallbackStats
     }
 
     const activePools = pools || []
@@ -69,18 +65,44 @@ export async function getPlatformStats(): Promise<PlatformStats> {
         categoriesSet.add(category)
       }
 
-      // Calculate max pool discount available for this pool
+      // Hardened calculation:
+      // Return 0 / skip if:
+      // - tier array is empty or has fewer than 2 tiers
+      // - highest_tier_price is 0, null, undefined, negative, or not a number
+      // - result is not finite (Number.isFinite)
+      // - result is less than 0 or greater than 100
       const tiers = pool.pool_tiers || []
+      if (!Array.isArray(tiers) || tiers.length < 2) {
+        continue
+      }
+
       const prices = tiers
         .map((t: { buyer_price: number }) => Number(t.buyer_price))
-        .filter((price: number) => !isNaN(price) && price > 0)
+        .filter((price: number) => typeof price === 'number' && Number.isFinite(price) && price > 0)
 
-      if (prices.length > 1) {
-        const highestPrice = Math.max(...prices)
-        const lowestPrice = Math.min(...prices)
-        if (highestPrice > 0 && lowestPrice < highestPrice) {
-          const discountPercent = Math.round(((highestPrice - lowestPrice) / highestPrice) * 100)
-          discounts.push(discountPercent)
+      if (prices.length < 2) {
+        continue
+      }
+
+      const highestPrice = Math.max(...prices)
+      const lowestPrice = Math.min(...prices)
+
+      if (
+        typeof highestPrice !== 'number' ||
+        !Number.isFinite(highestPrice) ||
+        highestPrice <= 0 ||
+        lowestPrice < 0
+      ) {
+        continue
+      }
+
+      if (lowestPrice < highestPrice) {
+        const rawDiscount = ((highestPrice - lowestPrice) / highestPrice) * 100
+        if (Number.isFinite(rawDiscount) && rawDiscount > 0 && rawDiscount <= 100) {
+          const discountPercent = Math.round(rawDiscount)
+          if (discountPercent > 0 && discountPercent <= 100) {
+            discounts.push(discountPercent)
+          }
         }
       }
     }
@@ -88,9 +110,16 @@ export async function getPlatformStats(): Promise<PlatformStats> {
     const totalCategoriesCount = categoriesSet.size
 
     // Highest discount % currently available across active pools
-    const avgSavingsPercent = discounts.length > 0 ? Math.max(...discounts) : 0
+    const avgSavingsPercent =
+      discounts.length > 0 && Number.isFinite(Math.max(...discounts))
+        ? Math.max(...discounts)
+        : 0
 
-    // Check if a suppliers/factories table exists in DB, otherwise safely return 0
+    // TODO: Suppliers table doesn't exist yet. Admin will manage suppliers
+    // via admin panel in a future phase. When the suppliers table is created
+    // with a verified boolean column, update this to:
+    // supabase.from('suppliers').select('*', { count: 'exact' }).eq('verified', true)
+    // Until then, returns 0 which causes the metric to be hidden in UI.
     let verifiedSuppliersCount = 0
     try {
       const { count } = await supabase
@@ -113,13 +142,7 @@ export async function getPlatformStats(): Promise<PlatformStats> {
       avgSavingsPercent,
     }
   } catch (error) {
-    logger.error('Error calculating platform stats:', error)
-    return {
-      activePoolsCount: 0,
-      verifiedSuppliersCount: 0,
-      totalCategoriesCount: 0,
-      avgSavingsPercent: 0,
-    }
+    console.error('Error calculating platform stats:', error)
+    return fallbackStats
   }
 }
-

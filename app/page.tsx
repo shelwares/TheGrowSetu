@@ -122,7 +122,7 @@ export default async function Home() {
                       Up to {stats.avgSavingsPercent}%
                     </div>
                     <div className="text-xs sm:text-sm text-brand-primary-200 mt-1 font-medium">
-                      Pool Discount
+                      Max Savings at Highest Tier
                     </div>
                   </div>
                 )}
@@ -131,18 +131,33 @@ export default async function Home() {
           </div>
           
           {/* Trust Features (Guarantees & Feature Claims) */}
-          <div className="mt-14 flex flex-wrap justify-center gap-8 md:gap-16 text-sm font-medium text-brand-primary-100">
-            <FadeIn delay={0.2} direction="up" className="flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-brand-accent-400" />
-              Zero Inventory Risk
+          <div className="mt-14 max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-4 text-left">
+            <FadeIn delay={0.2} direction="up" className="bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10 flex items-start gap-3">
+              <CheckCircle2 className="w-6 h-6 text-brand-accent-400 shrink-0 mt-0.5" />
+              <div>
+                <div className="font-bold text-white text-sm sm:text-base font-display">Zero Inventory Risk</div>
+                <div className="text-xs text-brand-primary-200 mt-0.5 leading-relaxed">
+                  Order only what you need. No bulk stocking required.
+                </div>
+              </div>
             </FadeIn>
-            <FadeIn delay={0.3} direction="up" className="flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-brand-accent-400" />
-              100% Escrow Protected
+            <FadeIn delay={0.3} direction="up" className="bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10 flex items-start gap-3">
+              <ShieldCheck className="w-6 h-6 text-brand-accent-400 shrink-0 mt-0.5" />
+              <div>
+                <div className="font-bold text-white text-sm sm:text-base font-display">Pay Only When Pool Fills</div>
+                <div className="text-xs text-brand-primary-200 mt-0.5 leading-relaxed">
+                  No advance payment. We collect only after your pool is complete.
+                </div>
+              </div>
             </FadeIn>
-            <FadeIn delay={0.4} direction="up" className="flex items-center gap-2">
-              <Factory className="w-5 h-5 text-brand-accent-400" />
-              2-Step Quality Check
+            <FadeIn delay={0.4} direction="up" className="bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10 flex items-start gap-3">
+              <Factory className="w-6 h-6 text-brand-accent-400 shrink-0 mt-0.5" />
+              <div>
+                <div className="font-bold text-white text-sm sm:text-base font-display">Quality Check on Large Orders</div>
+                <div className="text-xs text-brand-primary-200 mt-0.5 leading-relaxed">
+                  Every order above ₹1L goes through 2-step factory QC.
+                </div>
+              </div>
             </FadeIn>
           </div>
         </FadeIn>
@@ -176,7 +191,7 @@ export default async function Home() {
                 <Truck className="w-8 h-8" />
               </div>
               <h3 className="text-xl font-bold mb-3 font-display">3. QC + Delivery</h3>
-              <p className="text-ink-600">Once the pool closes, we manufacture, run our strict 2-step quality check, and deliver directly to you.</p>
+              <p className="text-ink-600">Once the pool closes, orders above ₹1L undergo our 2-step factory QC before direct delivery.</p>
             </div>
           </div>
         </FadeIn>

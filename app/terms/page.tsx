@@ -57,7 +57,7 @@ export default function TermsPage() {
         <section>
           <h2 className="text-2xl font-bold text-ink-900 mt-8 mb-3">6. Quality Control & Delivery</h2>
           <ul className="list-disc pl-6 space-y-2">
-            <li>We perform 2-step quality checks: at the factory and at delivery.</li>
+            <li>We perform 2-step quality checks on orders above ₹1,00,000: at the factory and at delivery.</li>
             <li>Products are inspected before dispatch.</li>
             <li>Delivery timelines depend on supplier lead times and logistics partners.</li>
             <li>We are not liable for delays caused by external factors (weather, strikes, etc.).</li>

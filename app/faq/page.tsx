@@ -26,7 +26,7 @@ const faqs = [
   {
     question: 'What quality control measures does TheGrowSetu have?',
     answer:
-      'We run a mandatory 2-step quality check process: (1) Factory QC — our team or a third-party inspector verifies quality at the manufacturing facility before goods are packaged; (2) Pre-dispatch QC — products are checked again at our fulfilment centre before they are shipped to buyers. If any batch fails QC, we either reject it or work with the factory on rework.',
+      'For large orders (above ₹1L), we run a strict 2-step quality check: (1) Factory QC — our team or a third-party inspector verifies quality at the manufacturing facility before goods are packaged; (2) Pre-dispatch QC — products are checked again at our fulfilment centre before shipping. If any batch fails QC, we reject or rework it.',
   },
   {
     question: 'How does order tracking work?',

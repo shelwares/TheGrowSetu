@@ -24,7 +24,7 @@ export default function AboutPage() {
           </p>
           <p className="text-ink-700 text-lg leading-relaxed mt-4">
             We pool demand from hundreds of small buyers into a single large order — unlocking factory-direct
-            pricing for everyone, with no inventory risk and our strict 2-step quality check.
+            pricing for everyone, with no inventory risk and factory-grade quality checks.
           </p>
         </section>
 
