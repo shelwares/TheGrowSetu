@@ -157,7 +157,7 @@ export default function LoginPage() {
             Access India&apos;s best factory prices with zero MOQ risk.
           </h3>
           <p className="text-brand-primary-100 text-base leading-relaxed">
-            Join 450+ retailers and MSMEs pooling their buying volume directly with vetted manufacturers.
+            Join verified retailers and MSMEs pooling their buying volume directly with vetted manufacturers.
           </p>
         </div>
 

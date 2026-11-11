@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
 import { getPools } from '@/lib/actions/pool'
+import { getPlatformStats } from '@/lib/stats'
 import PoolCard from '@/components/PoolCard'
 import { Button } from '@/components/ui/button'
 import { FadeIn } from '@/components/motion/fade-in'
@@ -17,7 +18,10 @@ export const metadata: Metadata = {
 }
 
 export default async function Home() {
-  const pools = await getPools()
+  const [pools, stats] = await Promise.all([
+    getPools(),
+    getPlatformStats(),
+  ])
   
   // Show max 6 pools on homepage
   const featuredPools = pools?.slice(0, 6) || []
@@ -40,7 +44,7 @@ export default async function Home() {
                 <span>Phase 2 Demand Pools Now Live</span>
               </span>
               <span className="text-white/40 hidden sm:inline">•</span>
-              <span className="text-white/90 hidden sm:inline">Save up to 42% on Factory Orders</span>
+              <span className="text-white/90 hidden sm:inline">Unlock Direct-from-Factory Pricing</span>
               <ArrowRight className="w-3.5 h-3.5 text-brand-accent-400 group-hover:translate-x-0.5 transition-transform" />
             </Link>
           </div>
@@ -62,34 +66,79 @@ export default async function Home() {
             </Button>
           </div>
 
-          {/* Live Stats Strip */}
-          <div className="mt-12 max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 px-2">
-            <div className="bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10 text-center">
-              <div className="text-2xl sm:text-3xl font-bold font-display text-white tracking-tight">₹1.8Cr+</div>
-              <div className="text-xs sm:text-sm text-brand-primary-200 mt-1 font-medium">Pooled GMV</div>
-            </div>
-            <div className="bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10 text-center">
-              <div className="text-2xl sm:text-3xl font-bold font-display text-white tracking-tight">48h</div>
-              <div className="text-xs sm:text-sm text-brand-primary-200 mt-1 font-medium">Avg Dispatch</div>
-            </div>
-            <div className="bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10 text-center">
-              <div className="text-2xl sm:text-3xl font-bold font-display text-white tracking-tight">100%</div>
-              <div className="text-xs sm:text-sm text-brand-primary-200 mt-1 font-medium">Insured Escrow</div>
-            </div>
-            <div className="bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10 text-center">
-              <div className="text-2xl sm:text-3xl font-bold font-display text-white tracking-tight">0%</div>
-              <div className="text-xs sm:text-sm text-brand-primary-200 mt-1 font-medium">Defect Guarantee</div>
-            </div>
+          {/* Data-Driven Honest Stats Strip */}
+          <div className="mt-12 max-w-4xl mx-auto px-2 min-h-[104px] flex items-center justify-center">
+            {stats.activePoolsCount === 0 ? (
+              /* Honest Early-Stage Banner */
+              <div className="w-full bg-white/5 backdrop-blur-md rounded-2xl p-6 sm:p-7 border border-white/10 text-center flex flex-col sm:flex-row items-center justify-between gap-4">
+                <div className="text-center sm:text-left">
+                  <div className="text-lg sm:text-xl font-bold font-display text-white">
+                    🚀 Launching Soon — Be Among the First 100 Verified Buyers
+                  </div>
+                  <div className="text-xs sm:text-sm text-brand-primary-200 mt-1">
+                    Get priority access to upcoming bulk factory pools and exclusive launch rates.
+                  </div>
+                </div>
+                <Button variant="accent" size="sm" asChild className="shrink-0 font-semibold">
+                  <Link href="/auth/signup">Join as Verified Buyer &rarr;</Link>
+                </Button>
+              </div>
+            ) : (
+              /* Real Metrics Strip (Only metrics with non-zero values are displayed) */
+              <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-4">
+                {stats.activePoolsCount > 0 && (
+                  <div className="bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10 text-center flex flex-col justify-center">
+                    <div className="text-2xl sm:text-3xl font-bold font-display text-white tracking-tight">
+                      {stats.activePoolsCount}
+                    </div>
+                    <div className="text-xs sm:text-sm text-brand-primary-200 mt-1 font-medium">
+                      Active Pools
+                    </div>
+                  </div>
+                )}
+                {stats.verifiedSuppliersCount > 0 && (
+                  <div className="bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10 text-center flex flex-col justify-center">
+                    <div className="text-2xl sm:text-3xl font-bold font-display text-white tracking-tight">
+                      {stats.verifiedSuppliersCount}
+                    </div>
+                    <div className="text-xs sm:text-sm text-brand-primary-200 mt-1 font-medium">
+                      Verified Suppliers
+                    </div>
+                  </div>
+                )}
+                {stats.totalCategoriesCount > 0 && (
+                  <div className="bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10 text-center flex flex-col justify-center">
+                    <div className="text-2xl sm:text-3xl font-bold font-display text-white tracking-tight">
+                      {stats.totalCategoriesCount}
+                    </div>
+                    <div className="text-xs sm:text-sm text-brand-primary-200 mt-1 font-medium">
+                      Categories
+                    </div>
+                  </div>
+                )}
+                {stats.avgSavingsPercent > 0 && (
+                  <div className="bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10 text-center flex flex-col justify-center">
+                    <div className="text-2xl sm:text-3xl font-bold font-display text-white tracking-tight">
+                      Up to {stats.avgSavingsPercent}%
+                    </div>
+                    <div className="text-xs sm:text-sm text-brand-primary-200 mt-1 font-medium">
+                      Pool Discount
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </div>
           
-          <div className="mt-16 flex flex-wrap justify-center gap-8 md:gap-16 text-sm font-medium text-brand-primary-100">
+          {/* Trust Features (Guarantees & Feature Claims) */}
+          <div className="mt-14 flex flex-wrap justify-center gap-8 md:gap-16 text-sm font-medium text-brand-primary-100">
             <FadeIn delay={0.2} direction="up" className="flex items-center gap-2">
               <CheckCircle2 className="w-5 h-5 text-brand-accent-400" />
               Zero Inventory Risk
             </FadeIn>
             <FadeIn delay={0.3} direction="up" className="flex items-center gap-2">
               <ShieldCheck className="w-5 h-5 text-brand-accent-400" />
-              100% Payment Secure
+              100% Escrow Protected
             </FadeIn>
             <FadeIn delay={0.4} direction="up" className="flex items-center gap-2">
               <Factory className="w-5 h-5 text-brand-accent-400" />
