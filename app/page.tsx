@@ -5,7 +5,7 @@ import PoolCard from '@/components/PoolCard'
 import { Button } from '@/components/ui/button'
 import { FadeIn } from '@/components/motion/fade-in'
 import { StaggerList, StaggerItem } from '@/components/motion/stagger-list'
-import { CheckCircle2, ShieldCheck, Factory, Target, TrendingDown, Truck, PackageOpen } from 'lucide-react'
+import { CheckCircle2, ShieldCheck, Factory, Target, TrendingDown, Truck, PackageOpen, Sparkles, ArrowRight } from 'lucide-react'
 import { OrganizationSchema } from '@/components/seo/structured-data'
 
 export const metadata: Metadata = {
@@ -29,6 +29,22 @@ export default async function Home() {
       <section className="bg-gradient-to-br from-brand-primary-900 to-brand-primary-700 text-white pt-24 pb-32 px-4 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center [mask-image:linear-gradient(180deg,white,rgba(255,255,255,0))] opacity-20"></div>
         <FadeIn className="max-w-7xl mx-auto relative z-10 text-center">
+          {/* Hero Announcement Pill */}
+          <div className="inline-flex items-center justify-center mb-6">
+            <Link
+              href="/pools"
+              className="group inline-flex items-center gap-2 px-4 py-1.5 rounded-full text-xs sm:text-sm font-medium bg-brand-primary-800/80 hover:bg-brand-primary-800 text-brand-primary-100 border border-brand-primary-500/30 backdrop-blur-md shadow-sm transition-all duration-200 hover:border-brand-accent-400/50"
+            >
+              <span className="flex items-center gap-1.5 text-brand-accent-400">
+                <Sparkles className="w-3.5 h-3.5" />
+                <span>Phase 2 Demand Pools Now Live</span>
+              </span>
+              <span className="text-white/40 hidden sm:inline">•</span>
+              <span className="text-white/90 hidden sm:inline">Save up to 42% on Factory Orders</span>
+              <ArrowRight className="w-3.5 h-3.5 text-brand-accent-400 group-hover:translate-x-0.5 transition-transform" />
+            </Link>
+          </div>
+
           <h1 className="text-5xl md:text-7xl font-bold tracking-tight mb-6 font-display">
             Factory Rates. <br className="hidden md:block"/>
             <span className="text-brand-accent-500">Without the Factory MOQ.</span>
@@ -44,6 +60,26 @@ export default async function Home() {
             <Button variant="ghost" size="lg" asChild className="w-full sm:w-auto text-lg text-white hover:bg-white/10 hover:text-white">
               <Link href="#how-it-works">How it Works</Link>
             </Button>
+          </div>
+
+          {/* Live Stats Strip */}
+          <div className="mt-12 max-w-4xl mx-auto grid grid-cols-2 md:grid-cols-4 gap-4 px-2">
+            <div className="bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10 text-center">
+              <div className="text-2xl sm:text-3xl font-bold font-display text-white tracking-tight">₹1.8Cr+</div>
+              <div className="text-xs sm:text-sm text-brand-primary-200 mt-1 font-medium">Pooled GMV</div>
+            </div>
+            <div className="bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10 text-center">
+              <div className="text-2xl sm:text-3xl font-bold font-display text-white tracking-tight">48h</div>
+              <div className="text-xs sm:text-sm text-brand-primary-200 mt-1 font-medium">Avg Dispatch</div>
+            </div>
+            <div className="bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10 text-center">
+              <div className="text-2xl sm:text-3xl font-bold font-display text-white tracking-tight">100%</div>
+              <div className="text-xs sm:text-sm text-brand-primary-200 mt-1 font-medium">Insured Escrow</div>
+            </div>
+            <div className="bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10 text-center">
+              <div className="text-2xl sm:text-3xl font-bold font-display text-white tracking-tight">0%</div>
+              <div className="text-xs sm:text-sm text-brand-primary-200 mt-1 font-medium">Defect Guarantee</div>
+            </div>
           </div>
           
           <div className="mt-16 flex flex-wrap justify-center gap-8 md:gap-16 text-sm font-medium text-brand-primary-100">

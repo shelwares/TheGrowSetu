@@ -18,6 +18,8 @@ import {
   Eye,
   EyeOff,
   ShieldCheck,
+  TrendingDown,
+  Users,
 } from 'lucide-react'
 
 export default function SignupPage() {
@@ -60,30 +62,32 @@ export default function SignupPage() {
   const fieldErrors = formState?.fieldErrors || {}
 
   return (
-    <main className="flex min-h-screen flex-col items-center justify-center p-4 sm:p-6 bg-ink-50/50">
-      <div className="w-full max-w-xl">
-        {/* Logo */}
-        <div className="text-center mb-8">
-          <Link href="/" className="inline-block">
-            <h1 className="text-3xl font-bold font-display tracking-tight">
-              <span className="text-brand-primary-700">The</span>
-              <span className="text-brand-accent-500">GrowSetu</span>
-            </h1>
-          </Link>
-          <p className="mt-2 text-ink-500 text-sm">
-            Factory Rates. Without the Factory MOQ.
-          </p>
-        </div>
-
-        <div className="bg-white rounded-2xl shadow-xl border border-ink-200 p-6 sm:p-8 space-y-6">
-          <div className="text-center pb-2 border-b border-ink-100">
-            <h2 className="text-2xl font-bold text-ink-900 font-display">
-              Create Your Buyer Account
-            </h2>
+    <main className="min-h-screen grid grid-cols-1 lg:grid-cols-12 bg-white">
+      {/* Left Column: Form */}
+      <div className="lg:col-span-7 flex flex-col justify-center items-center px-4 py-12 sm:px-8 lg:px-12 xl:px-16 overflow-y-auto">
+        <div className="w-full max-w-xl space-y-6">
+          {/* Logo */}
+          <div>
+            <Link href="/" className="inline-block">
+              <h1 className="text-3xl font-bold font-display tracking-tight">
+                <span className="text-brand-primary-700">The</span>
+                <span className="text-brand-accent-500">GrowSetu</span>
+              </h1>
+            </Link>
             <p className="mt-1 text-ink-500 text-sm">
-              Join Indian D2C brands & retailers unlocking pooled factory pricing
+              Factory Rates. Without the Factory MOQ.
             </p>
           </div>
+
+          <div className="bg-white rounded-2xl shadow-sm border border-ink-200 p-6 sm:p-8 space-y-6">
+            <div className="pb-2 border-b border-ink-100">
+              <h2 className="text-2xl font-bold text-ink-900 font-display">
+                Create Your Buyer Account
+              </h2>
+              <p className="mt-1 text-ink-500 text-sm">
+                Join Indian D2C brands & retailers unlocking pooled factory pricing
+              </p>
+            </div>
 
           {/* Google Signup Button */}
           <button
@@ -413,6 +417,57 @@ export default function SignupPage() {
               </Link>
             </p>
           </div>
+        </div>
+      </div>
+      </div>
+
+      {/* Right Column: Dark Trust Pane (Desktop only) */}
+      <div className="hidden lg:col-span-5 lg:flex flex-col justify-between p-12 bg-gradient-to-br from-brand-primary-950 via-brand-primary-900 to-brand-primary-800 text-white relative overflow-hidden">
+        <div className="absolute inset-0 bg-[url('/grid.svg')] bg-center opacity-10"></div>
+        <div className="relative z-10">
+          <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-brand-accent-400 text-xs font-semibold backdrop-blur-md mb-8 border border-white/10">
+            <ShieldCheck className="w-3.5 h-3.5" />
+            <span>Buyer Protection Guarantee</span>
+          </div>
+          <h3 className="text-3xl font-bold font-display leading-tight mb-4 text-white">
+            Built for Serious B2B Buyers & Growing Indian Brands.
+          </h3>
+          <p className="text-brand-primary-100 text-base leading-relaxed">
+            Stop paying middleman markups. Connect directly with certified manufacturers and scale your margins.
+          </p>
+        </div>
+
+        {/* Feature Badges */}
+        <div className="relative z-10 space-y-4 my-auto py-8">
+          <div className="flex items-start gap-3 p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm">
+            <Users className="w-5 h-5 text-brand-accent-400 shrink-0 mt-0.5" />
+            <div>
+              <div className="font-semibold text-white text-sm">Demand Aggregation</div>
+              <div className="text-xs text-brand-primary-200 mt-0.5">Pool orders with hundreds of verified buyers to hit factory MOQ easily.</div>
+            </div>
+          </div>
+          <div className="flex items-start gap-3 p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm">
+            <ShieldCheck className="w-5 h-5 text-brand-accent-400 shrink-0 mt-0.5" />
+            <div>
+              <div className="font-semibold text-white text-sm">Strict 2-Step QC</div>
+              <div className="text-xs text-brand-primary-200 mt-0.5">Every batch is physically inspected before dispatch from the factory floor.</div>
+            </div>
+          </div>
+          <div className="flex items-start gap-3 p-4 rounded-xl bg-white/5 border border-white/10 backdrop-blur-sm">
+            <TrendingDown className="w-5 h-5 text-brand-accent-400 shrink-0 mt-0.5" />
+            <div>
+              <div className="font-semibold text-white text-sm">Transparent Tiered Pricing</div>
+              <div className="text-xs text-brand-primary-200 mt-0.5">As the pool fills, prices drop automatically for every participant.</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="relative z-10 pt-6 border-t border-white/10 text-xs text-brand-primary-300 flex items-center justify-between">
+          <span>© {new Date().getFullYear()} TheGrowSetu</span>
+          <span className="flex items-center gap-1.5">
+            <CheckCircle2 className="w-3.5 h-3.5 text-brand-accent-400" />
+            Zero Inventory Risk
+          </span>
         </div>
       </div>
     </main>

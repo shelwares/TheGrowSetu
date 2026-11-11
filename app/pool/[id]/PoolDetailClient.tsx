@@ -16,7 +16,7 @@ import { Card } from '@/components/ui/card'
 import { FadeIn } from '@/components/motion/fade-in'
 import Image from 'next/image'
 import { motion, useReducedMotion } from 'framer-motion'
-import { Minus, Plus, Lock, Clock, ImageIcon, ZoomIn } from 'lucide-react'
+import { Minus, Plus, Lock, Clock, ImageIcon, ZoomIn, Zap } from 'lucide-react'
 import ImageLightbox from '@/components/ui/ImageLightbox'
 
 function formatRemainingTime(deadlineStr: string | null | undefined): string {
@@ -50,6 +50,15 @@ export default function PoolDetailClient({ pool }: { pool: any }) {
   const imageUrl = product?.base_image?.trim()
   const hasValidImage = Boolean(imageUrl && !imageError)
   const progressPercentage = Math.min(100, Math.round((pool.current_quantity / pool.target_quantity) * 100))
+
+  // Calculate Next Tier Discount info
+  const sortedTiers: Array<{ min_qty: number; buyer_price: number }> = (pool.pool_tiers || [])
+    .slice()
+    .sort((a: any, b: any) => a.min_qty - b.min_qty)
+
+  const currentPoolQty = pool.current_quantity || 0
+  const nextTier = sortedTiers.find((t) => t.min_qty > currentPoolQty)
+  const pcsToNextTier = nextTier ? nextTier.min_qty - currentPoolQty : null
 
   useEffect(() => {
     // Debounce or directly call the server action to get the accurate price
@@ -208,8 +217,26 @@ export default function PoolDetailClient({ pool }: { pool: any }) {
             </FadeIn>
 
             {/* Pricing slabs */}
-            <FadeIn delay={0.2}>
+            <FadeIn delay={0.2} className="space-y-3">
               <PricingSlabsTable tiers={pool.pool_tiers} currentPoolQty={pool.current_quantity || 0} buyerQty={quantity} />
+              
+              {/* Next Tier Discount Badge */}
+              {pcsToNextTier && nextTier ? (
+                <div className="flex items-center gap-2.5 p-3.5 bg-gradient-to-r from-amber-50 to-orange-50 border border-amber-200/80 rounded-xl text-amber-900 text-sm font-medium shadow-sm">
+                  <span className="flex items-center justify-center w-7 h-7 rounded-lg bg-amber-500 text-white shrink-0">
+                    <Zap className="w-4 h-4 fill-white" />
+                  </span>
+                  <span>
+                    <strong>Only {pcsToNextTier.toLocaleString()} pcs</strong> needed to unlock the next tier at{' '}
+                    <strong className="text-amber-950 font-bold">₹{nextTier.buyer_price}/pc</strong>!
+                  </span>
+                </div>
+              ) : sortedTiers.length > 0 ? (
+                <div className="flex items-center gap-2 p-3 bg-emerald-50 border border-emerald-200 rounded-xl text-emerald-800 text-sm font-medium">
+                  <span className="w-2 h-2 rounded-full bg-emerald-500"></span>
+                  <span>Maximum tier unlocked! You are securing the lowest factory price.</span>
+                </div>
+              ) : null}
             </FadeIn>
           </div>
 
@@ -338,6 +365,29 @@ export default function PoolDetailClient({ pool }: { pool: any }) {
         src={hasValidImage ? imageUrl : null}
         alt={product?.name}
       />
+
+      {/* Sticky Mobile CTA Bar */}
+      <div className="md:hidden fixed bottom-0 left-0 right-0 z-40 bg-white/95 backdrop-blur-md border-t border-ink-200 px-4 py-3 shadow-[0_-4px_12px_rgba(0,0,0,0.08)]">
+        <div className="flex items-center justify-between gap-3">
+          <div>
+            <div className="text-xs text-ink-500 font-medium">Total ({quantity} units)</div>
+            <div className="text-lg font-bold text-ink-900 font-display">
+              ₹{((quantity * projectedPrice) + logisticsFee).toLocaleString()}
+            </div>
+          </div>
+          <Button
+            type="button"
+            variant="accent"
+            size="md"
+            disabled={isJoining}
+            onClick={(e) => handleJoinPool(e)}
+            className="flex-1 max-w-[200px] font-bold shadow-sm gap-2"
+          >
+            <Lock className="w-4 h-4" />
+            {isJoining ? 'Joining...' : 'Join Pool'}
+          </Button>
+        </div>
+      </div>
     </div>
   )
 }
