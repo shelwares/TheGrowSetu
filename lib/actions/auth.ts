@@ -178,8 +178,9 @@ export async function resetPassword(formData: FormData) {
     );
 
     if (error) {
+      console.error("Supabase Reset Error:", error);
       logger.error('Password reset error', { error: error.message });
-      return { error: 'Failed to send reset email' };
+      return { error: error.message || "Failed to send reset email" };
     }
 
     return { success: true };
