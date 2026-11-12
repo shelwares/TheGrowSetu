@@ -15,11 +15,13 @@ export async function getMyOrders() {
         *,
         pools (
           id,
+          product_id,
           target_quantity,
           current_quantity,
           status,
           deadline,
           products (
+            id,
             name,
             description,
             base_image,

@@ -15,12 +15,44 @@ type PoolCardProps = {
   priority?: boolean
 }
 
+function getUrgencyBadge(deadlineStr: string | null | undefined) {
+  if (!deadlineStr) return null
+  const deadline = new Date(deadlineStr)
+  if (isNaN(deadline.getTime())) return null
+
+  const now = new Date()
+  const diffMs = deadline.getTime() - now.getTime()
+
+  if (diffMs <= 0) {
+    return { text: 'Closed', isClosed: true }
+  }
+
+  const oneDayMs = 1000 * 60 * 60 * 24
+  const days = Math.ceil(diffMs / oneDayMs)
+
+  if (days <= 1) {
+    const hours = Math.floor(diffMs / (1000 * 60 * 60))
+    if (hours > 0 && hours <= 12) {
+      return { text: `🔥 Closing in ${hours}h!`, isClosed: false }
+    }
+    return { text: '🔥 Closing Tomorrow!', isClosed: false }
+  }
+
+  if (days <= 3) {
+    return { text: `🔥 Closing in ${days} days!`, isClosed: false }
+  }
+
+  return null
+}
+
 export default function PoolCard({ pool, priority = false }: PoolCardProps) {
   const [imageError, setImageError] = useState(false)
   const product = pool.products
   const imageUrl = product?.base_image?.trim()
   const progressPercentage = Math.min(100, Math.round((pool.current_quantity / pool.target_quantity) * 100))
   const shouldReduceMotion = useReducedMotion()
+  const urgency = getUrgencyBadge(pool.deadline)
+  const buyersCount = typeof pool.buyers_count === 'number' ? pool.buyers_count : 0
   
   let currentPrice = pool.pool_tiers?.[0]?.buyer_price
   if (pool.pool_tiers && pool.pool_tiers.length > 0) {
@@ -49,17 +81,47 @@ export default function PoolCard({ pool, priority = false }: PoolCardProps) {
             onError={() => setImageError(true)}
           />
         )}
-        <div className="absolute top-3 left-3">
+        <div className="absolute top-3 left-3 z-10">
           <Badge className="bg-white/90 backdrop-blur-md text-brand-primary-700 hover:bg-white/90 border-0 shadow-sm">
             {product?.category || 'General'}
           </Badge>
         </div>
+
+        {/* Urgency Badge */}
+        {urgency && (
+          <div className="absolute top-3 right-3 z-10">
+            <Badge
+              className={`border-0 shadow-md font-bold text-xs px-2.5 py-1 ${
+                urgency.isClosed
+                  ? 'bg-slate-900/90 text-white'
+                  : 'bg-rose-600/95 text-white shadow-rose-500/20'
+              }`}
+            >
+              {urgency.text}
+            </Badge>
+          </div>
+        )}
       </div>
       
       <div className="p-5 flex-grow flex flex-col">
         <h3 className="font-display font-semibold text-lg text-ink-900 mb-1 line-clamp-1">{product?.name}</h3>
-        <p className="text-sm text-ink-500 mb-5 line-clamp-2 flex-grow">{product?.description}</p>
+        <p className="text-sm text-ink-500 mb-4 line-clamp-2">{product?.description}</p>
         
+        {/* Social Proof FOMO Badge */}
+        <div className="mb-4">
+          {buyersCount > 0 ? (
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-50 text-brand-primary-700 border border-brand-primary-100/80 shadow-xs">
+              <span>👥</span>
+              <span>{buyersCount} {buyersCount === 1 ? 'buyer has' : 'buyers have'} joined</span>
+            </div>
+          ) : (
+            <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200/80 shadow-xs">
+              <span>✨</span>
+              <span>Be the first to join this pool!</span>
+            </div>
+          )}
+        </div>
+
         <div className="mb-5">
           <div className="flex justify-between text-sm mb-2 font-medium">
             <span className="text-ink-700">Progress</span>

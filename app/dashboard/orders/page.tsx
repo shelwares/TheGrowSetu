@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { getMyOrders } from '@/lib/actions/dashboard'
+import { getActivePoolsByProduct } from '@/lib/actions/pool'
 import Link from 'next/link'
 
 const STATUS_COLORS: Record<string, string> = {
@@ -11,7 +12,10 @@ const STATUS_COLORS: Record<string, string> = {
 }
 
 export default async function MyOrdersPage() {
-  const orders = await getMyOrders()
+  const [orders, activePoolsMap] = await Promise.all([
+    getMyOrders(),
+    getActivePoolsByProduct(),
+  ])
 
   return (
     <div className="space-y-6">
@@ -40,13 +44,25 @@ export default async function MyOrdersPage() {
                 <th className="px-6 py-3 text-left">Total</th>
                 <th className="px-6 py-3 text-left">Status</th>
                 <th className="px-6 py-3 text-left">Date</th>
-                <th className="px-6 py-3"></th>
+                <th className="px-6 py-3 text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100">
               {orders.map((order: any) => {
                 const product = order.pools?.products
                 const total = (order.quantity * order.unit_price_at_join) + (order.logistics_fee_applied || 0)
+                const poolStatus = (order.pools?.status || '').toLowerCase()
+                const orderStatus = (order.status || '').toLowerCase()
+                const isEligibleForReorder =
+                  ['completed', 'fulfilled', 'delivered'].includes(poolStatus) ||
+                  orderStatus === 'delivered'
+
+                const productId = order.pools?.product_id || product?.id
+                const activePoolId = productId ? activePoolsMap[productId] : null
+                const reorderHref = activePoolId
+                  ? `/pool/${activePoolId}`
+                  : `/request-product?product=${encodeURIComponent(product?.name || '')}`
+
                 return (
                   <tr key={order.id} className="hover:bg-slate-50 transition-colors">
                     <td className="px-6 py-4">
@@ -68,10 +84,22 @@ export default async function MyOrdersPage() {
                     <td className="px-6 py-4 text-slate-500 text-xs">
                       {new Date(order.created_at).toLocaleDateString('en-IN')}
                     </td>
-                    <td className="px-6 py-4">
-                      <Link href={`/dashboard/orders/${order.id}`} className="text-indigo-600 hover:text-indigo-700 font-medium text-xs">
-                        View →
-                      </Link>
+                    <td className="px-6 py-4 text-right">
+                      <div className="inline-flex items-center gap-2">
+                        <Link href={`/dashboard/orders/${order.id}`} className="text-indigo-600 hover:text-indigo-700 font-medium text-xs">
+                          View →
+                        </Link>
+                        {isEligibleForReorder && (
+                          <Link
+                            href={reorderHref}
+                            className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200 transition-colors"
+                            title={activePoolId ? 'Join active pool for this product' : 'Request new pool for this product'}
+                          >
+                            <span>🔄</span>
+                            <span>Reorder</span>
+                          </Link>
+                        )}
+                      </div>
                     </td>
                   </tr>
                 )

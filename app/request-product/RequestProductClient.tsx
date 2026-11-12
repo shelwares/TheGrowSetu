@@ -28,6 +28,7 @@ import {
 interface RequestProductClientProps {
   initialRequests: ProductRequestRecord[]
   buyerName?: string
+  defaultProductName?: string
 }
 
 const STATUS_CONFIG: Record<
@@ -63,9 +64,10 @@ const STATUS_CONFIG: Record<
 export default function RequestProductClient({
   initialRequests,
   buyerName,
+  defaultProductName,
 }: RequestProductClientProps) {
   const router = useRouter()
-  const [productName, setProductName] = useState('')
+  const [productName, setProductName] = useState(defaultProductName || '')
   const [quantity, setQuantity] = useState<number | ''>('')
   const [timeline, setTimeline] = useState<string>(TIMELINE_OPTIONS[0])
   const [additionalDetails, setAdditionalDetails] = useState('')

@@ -19,19 +19,25 @@ import { motion, useReducedMotion } from 'framer-motion'
 import { Minus, Plus, Lock, Clock, ImageIcon, ZoomIn, Zap } from 'lucide-react'
 import ImageLightbox from '@/components/ui/ImageLightbox'
 
-function formatRemainingTime(deadlineStr: string | null | undefined): string {
-  if (!deadlineStr) return 'Ongoing'
+function formatRemainingTime(deadlineStr: string | null | undefined): { text: string; isUrgent: boolean; isClosed: boolean } {
+  if (!deadlineStr) return { text: 'Ongoing', isUrgent: false, isClosed: false }
   const deadline = new Date(deadlineStr)
-  if (isNaN(deadline.getTime())) return 'Ongoing'
+  if (isNaN(deadline.getTime())) return { text: 'Ongoing', isUrgent: false, isClosed: false }
   const now = new Date()
   const diffMs = deadline.getTime() - now.getTime()
-  if (diffMs <= 0) return 'Pool Closed'
-  const days = Math.floor(diffMs / (1000 * 60 * 60 * 24))
-  const hours = Math.floor((diffMs % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
-  if (days > 1) return `Pool Closes in ${days} Days`
-  if (days === 1) return 'Pool Closes in 1 Day'
-  if (hours > 0) return `Pool Closes in ${hours} Hours`
-  return 'Pool Closing Soon'
+  if (diffMs <= 0) return { text: 'Closed', isUrgent: true, isClosed: true }
+  const days = Math.ceil(diffMs / (1000 * 60 * 60 * 24))
+  if (days <= 1) {
+    const hours = Math.floor(diffMs / (1000 * 60 * 60))
+    if (hours > 0 && hours <= 12) {
+      return { text: `🔥 Closing in ${hours}h!`, isUrgent: true, isClosed: false }
+    }
+    return { text: '🔥 Closing Tomorrow!', isUrgent: true, isClosed: false }
+  }
+  if (days <= 3) {
+    return { text: `🔥 Closing in ${days} days!`, isUrgent: true, isClosed: false }
+  }
+  return { text: `Pool Closes in ${days} Days`, isUrgent: false, isClosed: false }
 }
 
 export default function PoolDetailClient({ pool }: { pool: any }) {
@@ -50,6 +56,8 @@ export default function PoolDetailClient({ pool }: { pool: any }) {
   const imageUrl = product?.base_image?.trim()
   const hasValidImage = Boolean(imageUrl && !imageError)
   const progressPercentage = Math.min(100, Math.round((pool.current_quantity / pool.target_quantity) * 100))
+  const buyersCount = typeof pool.buyers_count === 'number' ? pool.buyers_count : 0
+  const urgency = formatRemainingTime(pool.deadline)
 
   // Calculate Next Tier Discount info
   const sortedTiers: Array<{ min_qty: number; buyer_price: number }> = (pool.pool_tiers || [])
@@ -173,9 +181,17 @@ export default function PoolDetailClient({ pool }: { pool: any }) {
                 <Badge className="bg-brand-primary-50 text-brand-primary-700 border-0">
                   {product?.category || 'General'}
                 </Badge>
-                <span className="text-sm font-medium text-warning flex items-center gap-1.5">
+                <span
+                  className={`text-sm font-semibold flex items-center gap-1.5 px-3 py-1 rounded-full ${
+                    urgency.isUrgent
+                      ? urgency.isClosed
+                        ? 'bg-slate-200 text-slate-800'
+                        : 'bg-rose-50 text-rose-700 border border-rose-200 shadow-xs'
+                      : 'text-warning'
+                  }`}
+                >
                   <Clock className="w-4 h-4" />
-                  {formatRemainingTime(pool.deadline)}
+                  {urgency.text}
                 </span>
               </div>
 
@@ -212,6 +228,21 @@ export default function PoolDetailClient({ pool }: { pool: any }) {
                 <div className="flex justify-between text-sm text-ink-600 mt-3 font-medium">
                   <span>{pool.current_quantity.toLocaleString()} units committed</span>
                   <span>Goal: {pool.target_quantity.toLocaleString()} units</span>
+                </div>
+
+                {/* Social Proof FOMO Badge */}
+                <div className="mt-4 pt-4 border-t border-ink-100 flex items-center justify-between">
+                  {buyersCount > 0 ? (
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-indigo-50 text-brand-primary-700 border border-brand-primary-100/80 shadow-xs">
+                      <span>👥</span>
+                      <span>{buyersCount} {buyersCount === 1 ? 'buyer has' : 'buyers have'} joined this pool</span>
+                    </div>
+                  ) : (
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200/80 shadow-xs">
+                      <span>✨</span>
+                      <span>Be the first to join this pool!</span>
+                    </div>
+                  )}
                 </div>
               </Card>
             </FadeIn>
@@ -337,6 +368,21 @@ export default function PoolDetailClient({ pool }: { pool: any }) {
                           </motion.span>
                         )}
                       </div>
+                    </div>
+
+                    {/* Social Proof FOMO Pill right above Join button */}
+                    <div className="pt-1">
+                      {buyersCount > 0 ? (
+                        <div className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-semibold bg-indigo-50 text-brand-primary-700 border border-brand-primary-100 text-center">
+                          <span>👥</span>
+                          <span><strong>{buyersCount}</strong> {buyersCount === 1 ? 'buyer has' : 'buyers have'} joined</span>
+                        </div>
+                      ) : (
+                        <div className="w-full flex items-center justify-center gap-1.5 py-1.5 px-3 rounded-lg text-xs font-semibold bg-amber-50 text-amber-800 border border-amber-200 text-center">
+                          <span>✨</span>
+                          <span>Be the first to join this pool!</span>
+                        </div>
+                      )}
                     </div>
 
                     <Button

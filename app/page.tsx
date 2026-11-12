@@ -85,7 +85,7 @@ export default async function Home() {
               </div>
             ) : (
               /* Real Metrics Strip (Only metrics with non-zero values are displayed) */
-              <div className="w-full grid grid-cols-2 md:grid-cols-4 gap-4">
+              <div className="w-full max-w-3xl mx-auto grid grid-cols-1 sm:grid-cols-3 gap-4">
                 {stats.activePoolsCount > 0 && (
                   <div className="bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10 text-center flex flex-col justify-center">
                     <div className="text-2xl sm:text-3xl font-bold font-display text-white tracking-tight">
@@ -93,16 +93,6 @@ export default async function Home() {
                     </div>
                     <div className="text-xs sm:text-sm text-brand-primary-200 mt-1 font-medium">
                       Active Pools
-                    </div>
-                  </div>
-                )}
-                {stats.verifiedSuppliersCount > 0 && (
-                  <div className="bg-white/5 backdrop-blur-md rounded-xl p-4 border border-white/10 text-center flex flex-col justify-center">
-                    <div className="text-2xl sm:text-3xl font-bold font-display text-white tracking-tight">
-                      {stats.verifiedSuppliersCount}
-                    </div>
-                    <div className="text-xs sm:text-sm text-brand-primary-200 mt-1 font-medium">
-                      Verified Suppliers
                     </div>
                   </div>
                 )}

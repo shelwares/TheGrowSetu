@@ -2,7 +2,6 @@ import { createClient } from '@supabase/supabase-js'
 
 export interface PlatformStats {
   activePoolsCount: number
-  verifiedSuppliersCount: number
   totalCategoriesCount: number
   avgSavingsPercent: number
 }
@@ -14,7 +13,6 @@ export interface PlatformStats {
 export async function getPlatformStats(): Promise<PlatformStats> {
   const fallbackStats: PlatformStats = {
     activePoolsCount: 0,
-    verifiedSuppliersCount: 0,
     totalCategoriesCount: 0,
     avgSavingsPercent: 0,
   }
@@ -115,29 +113,8 @@ export async function getPlatformStats(): Promise<PlatformStats> {
         ? Math.max(...discounts)
         : 0
 
-    // TODO: Suppliers table doesn't exist yet. Admin will manage suppliers
-    // via admin panel in a future phase. When the suppliers table is created
-    // with a verified boolean column, update this to:
-    // supabase.from('suppliers').select('*', { count: 'exact' }).eq('verified', true)
-    // Until then, returns 0 which causes the metric to be hidden in UI.
-    let verifiedSuppliersCount = 0
-    try {
-      const { count } = await supabase
-        .from('suppliers')
-        .select('*', { count: 'exact', head: true })
-        .eq('verification_status', 'verified')
-
-      if (count && count > 0) {
-        verifiedSuppliersCount = count
-      }
-    } catch {
-      // suppliers table does not exist in schema (supplier logic is managed offline)
-      verifiedSuppliersCount = 0
-    }
-
     return {
       activePoolsCount,
-      verifiedSuppliersCount,
       totalCategoriesCount,
       avgSavingsPercent,
     }

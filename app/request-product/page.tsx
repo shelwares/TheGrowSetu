@@ -10,7 +10,14 @@ export const metadata: Metadata = {
   description: 'Submit a custom product sourcing request to unlock pooled factory pricing.',
 }
 
-export default async function RequestProductPage() {
+export default async function RequestProductPage({
+  searchParams,
+}: {
+  searchParams?: Promise<{ product?: string }>
+}) {
+  const resolvedSearchParams = searchParams ? await searchParams : undefined
+  const initialProduct = resolvedSearchParams?.product || ''
+
   const supabase = await getSupabaseServerClient()
   const {
     data: { user },
@@ -29,6 +36,7 @@ export default async function RequestProductPage() {
     <RequestProductClient
       initialRequests={requests}
       buyerName={profile?.full_name || undefined}
+      defaultProductName={initialProduct}
     />
   )
 }
