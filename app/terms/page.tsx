@@ -10,7 +10,7 @@ export default function TermsPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-16">
       <h1 className="text-4xl font-bold text-ink-900 mb-2">Terms & Conditions</h1>
-      <p className="text-ink-500 mb-8">Last updated: 25 September 2026</p>
+      <p className="text-ink-500 mb-8">Last updated: 12 November 2026</p>
 
       <div className="prose prose-ink max-w-none space-y-6 text-ink-700">
         <section>
@@ -40,7 +40,7 @@ export default function TermsPage() {
             <li>Product prices decrease as total pool quantity increases (dynamic pricing).</li>
             <li>Delivery fees are calculated based on each buyer&apos;s individual quantity.</li>
             <li>Once a pool closes and is confirmed, orders cannot be cancelled.</li>
-            <li>If a pool fails to reach its minimum target, all committed amounts are refunded.</li>
+            <li>If a pool fails to reach its minimum target, your commitment is automatically cancelled. <strong>No payment is collected.</strong></li>
           </ul>
         </section>
 
@@ -49,6 +49,7 @@ export default function TermsPage() {
           <ul className="list-disc pl-6 space-y-2">
             <li>No payment is collected when joining a pool.</li>
             <li>Payment is collected only after the pool closes successfully.</li>
+            <li>Payments are collected manually via phone/WhatsApp call after pool confirmation. <strong>No payment gateway or advance payment is charged at the time of joining.</strong></li>
             <li>We currently accept UPI, bank transfer, and other manual payment methods.</li>
             <li>Payment gateway integration is planned for future releases.</li>
           </ul>

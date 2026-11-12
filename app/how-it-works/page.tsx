@@ -32,14 +32,14 @@ const steps = [
     number: '04',
     title: 'Pool Closes & Manufacturing Begins',
     description:
-      'Once the pool hits its target (or deadline), we confirm the order, collect payment, and place the factory order. You pay only the final locked-in price.',
+      'Once the pool hits its target (or deadline), we confirm the order, contact each buyer by phone/WhatsApp to collect payment, and place the factory order. You pay only the final locked-in price — no advance payment at join time.',
     icon: '🏭',
   },
   {
     number: '05',
     title: 'QC Check + Delivery to Your Door',
     description:
-      'We run a strict 2-step quality inspection — at the factory and before dispatch. Products are then shipped directly to each buyer\'s address.',
+      'For orders above ₹1,00,000 we run a 2-step quality inspection — at the factory and before dispatch. Products are then shipped directly to each buyer\'s address.',
     icon: '🚚',
   },
 ]
@@ -48,9 +48,17 @@ export default function HowItWorksPage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-16">
       <h1 className="text-4xl font-bold text-ink-900 mb-4 font-display">How It Works</h1>
-      <p className="text-xl text-ink-500 mb-16 max-w-2xl">
+      <p className="text-xl text-ink-500 mb-8 max-w-2xl">
         Pooled buying in 5 simple steps. Join any quantity, get factory pricing, zero inventory risk.
       </p>
+
+      {/* No advance payment callout */}
+      <div className="bg-brand-primary-50 border border-brand-primary-200 rounded-xl px-6 py-4 mb-12 flex items-center gap-3">
+        <span className="text-2xl flex-shrink-0">💡</span>
+        <p className="text-brand-primary-900 font-medium">
+          <strong>No Advance Payment Required.</strong> You commit to a quantity when you join — payment is only collected after the pool successfully fills.
+        </p>
+      </div>
 
       <div className="space-y-12">
         {steps.map((step, index) => (

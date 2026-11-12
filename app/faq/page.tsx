@@ -34,9 +34,9 @@ const faqs = [
       'Once a pool closes and manufacturing begins, you can track your order status from your Dashboard → Orders page. Status updates include: Pool Closed → Manufacturing → QC Passed → Dispatched → Delivered. You will also receive email notifications at each major milestone.',
   },
   {
-    question: 'What is the refund policy if the pool fails to reach its target?',
+    question: 'What happens if the pool fails to reach its target?',
     answer:
-      'If a pool does not reach its minimum target quantity by the deadline, all committed buyers receive a 100% full refund to their original payment method (UPI/bank account) within 5–7 business days. No cancellation fee or deduction is applied.',
+      'We operate on a "Pay Only When Pool Fills" model — no advance payment is collected when joining a pool. If a pool does not reach its target quantity by the deadline, your commitment is automatically cancelled and you owe nothing. No refund is needed because no payment was ever taken.',
   },
   {
     question: 'What payment methods are accepted?',
@@ -51,7 +51,7 @@ const faqs = [
   {
     question: 'Can I cancel my order after joining a pool?',
     answer:
-      'Yes, with conditions: Before the pool closes — 100% refund, no questions asked. After the pool closes but before dispatch — 90% refund (10% handling fee applies). After dispatch — No refund as the order has already been shipped. To cancel, email refunds@thegrowsetu.com with your order ID.',
+      'Yes: Before the pool closes or before payment collection — you can cancel anytime with zero penalty since no advance payment was taken. After payment is collected but before dispatch — you receive a 95% refund (5% processing fee) within 7–10 business days. After dispatch — orders cannot be cancelled. To cancel, email refunds@thegrowsetu.com with your order ID.',
   },
   {
     question: 'How do I contact TheGrowSetu support?',
